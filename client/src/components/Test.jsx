@@ -1,15 +1,15 @@
 import axios from 'axios';
 import {useState} from "react";
+import {SERVER_HOST} from "../config/global_constants.js";
 
 export default function Test() {
-
-    let SERVER_HOST = "http://localhost:4000/api";
     const [cars, setCars] = useState([]);
 
     function getCars() {
-        axios.get(`${SERVER_HOST}/test`)
+        axios.get(`${SERVER_HOST}/api/test`)
             .then(res =>
             {
+                console.log(res.data);
                 setCars(res.data);
             })
     }

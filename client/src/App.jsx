@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router';
 
-import Home from './pages/home';
-import Products from './pages/products';
-import Cart from './pages/cart';
-import Test from './pages/test';
+import Home from './components/Home.jsx';
+import Products from './components/Products.jsx';
+import Cart from './components/Cart.jsx';
+import Test from './components/Test.jsx';
 
 function App() {
     return (

@@ -1,25 +1,33 @@
-require('dotenv').config({path:`./config/.env`});
-const express = require('express');
-const cors = require('cors'); // 1. Import it properly
+// Server-side global variables
+require(`dotenv`).config({path:`./config/.env`})
+// require(`./config/db`)
 
-const app = express();
-const port = process.env.SERVER_PORT || 4000;
+// Express
+const express = require(`express`)
+const app = express()
 
-// 2. IMPORTANT: You must use app.use() to activate the middleware
-app.use(cors({
-    origin: 'http://localhost:5173', // Allow your Vite/React dev server
-    credentials: true
-}));
+app.use(require(`body-parser`).json())
+app.use(require(`cors`)({credentials: true, origin: process.env.LOCAL_HOST}))
 
-app.get('/api/test', (req, res) => {
-    let cars = [
-        {_id:0, model:"Avensis", colour:"Red", year:2020, price:30000},
-        {_id:1, model:"Yaris", colour:"Green", year:2010, price:2000},
-        {_id:2, model:"Corolla", colour:"Red", year:2019, price:20000}
-    ];
-    res.json(cars); // res.json is better for sending arrays/objects
-});
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+app.use(require(`./routes/test`))
+
+// Port
+app.listen(process.env.SERVER_PORT, () =>
+{
+    console.log(`Connected to port ` + process.env.SERVER_PORT)
+})
+
+// Error 404
+app.use((req, res, next) => {next(res.status(404).send("Not Found"))})
+
+// Other errors
+app.use(function (err, req, res, next)
+{
+    console.error(err.message)
+    if (!err.statusCode)
+    {
+        err.statusCode = 500
+    }
+    res.status(err.statusCode).send(err.message)
+})
