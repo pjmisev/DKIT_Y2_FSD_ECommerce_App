@@ -1,30 +1,34 @@
 const router = require(`express`).Router()
 const productModel = require(`../models/product`)
 
-router.get(`/products`, (req, res) =>
+router.get(`/api/products`, (req, res) =>
 {
     productModel.find({})
         .then(data =>
         {
             res.json(data)
         })
-        .catch(res.json(500, {
-            error: "An error has occurred."
-        }));
+        .catch(err => {
+            res.status(500).json({
+                error: "An error has occurred."
+            })
+        });
 })
 
-router.get(`/products/:id`, (req, res) => {
+router.get(`/api/products/:id`, (req, res) => {
     productModel.findById(req.params.id)
         .then(data =>
         {
             res.json(data)
         })
-        .catch(res.json(500, {
-            error: "An error has occurred."
-        }));
+        .catch(err => {
+            res.status(500).json({
+                error: "An error has occurred."
+            })
+        });
 })
 
-router.post(`/products`, (req, res) =>
+router.post(`/api/products`, (req, res) =>
 {
     if(
         req.body.category &&
@@ -52,17 +56,19 @@ router.post(`/products`, (req, res) =>
             {
                 res.json(data)
             })
-            .catch(res.json(500, {
-                error: "An error has occurred."
-            }));
+            .catch(err => {
+                res.status(500).json({
+                    error: "An error has occurred."
+                })
+            });
     } else {
-        res.json(400, {
+        res.status(400).json({
             error: "Not enough data provided."
         })
     }
 })
 
-router.put(`/products/:id`, (req, res) => {
+router.put(`/api/products/:id`, (req, res) => {
     productModel.findByIdAndUpdate(
         req.params.id,
         {
@@ -75,26 +81,30 @@ router.put(`/products/:id`, (req, res) => {
             energy_rating: req.body.energy_rating,
             price: req.body.price
         },
-        { new: true }
+        { returnDocument: 'after' }
     )
         .then(data => {
             res.json(data);
         })
-        .catch(res.json(500, {
-            error: "An error has occurred."
-        }));
+        .catch(err => {
+            res.status(500).json({
+                error: "An error has occurred."
+            })
+        });
 });
 
-router.delete(`/products/:id`, (req, res) =>
+router.delete(`/api/products/:id`, (req, res) =>
 {
     productModel.findByIdAndDelete(req.params.id)
         .then(data =>
         {
             res.json(data)
         })
-        .catch(res.json(500, {
-            error: "An error has occurred."
-        }));
+        .catch(err => {
+            res.status(500).json({
+                error: "An error has occurred."
+            })
+        });
 })
 
 module.exports = router
