@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "FSD Y2S2 ECommerce CA",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

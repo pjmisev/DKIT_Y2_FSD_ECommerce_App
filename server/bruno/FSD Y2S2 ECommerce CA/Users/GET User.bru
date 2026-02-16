@@ -1,0 +1,20 @@
+meta {
+  name: GET User
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:4000/api/users/69933d7ca9f8b4286f078d2e
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  : 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,26 @@
+meta {
+  name: POST Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:4000/api/users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "fname": "TEST",
+    "lname": "USER",
+    "email": "test@user.com",
+    "password": "ThisISaPassword1!",
+    "date_created": "2026-02-16"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
