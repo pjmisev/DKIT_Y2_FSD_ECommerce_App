@@ -4,6 +4,9 @@ const {validateString, validatePrice, validateDate} = require("../lib/validation
 const createError = require("http-errors");
 const jwt = require('jsonwebtoken')
 
+const fs = require('fs')
+const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
+
 router.get(`/api/products`, (req, res, next) =>
 {
     productsModel.find({})
@@ -29,7 +32,7 @@ router.get(`/api/products/:id`, (req, res, next) => {
 
 router.post(`/api/products`, (req, res, next) =>
 {
-    jwt.verify(req.headers.authorization, process.env.JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
     {
         if (err)
         {
