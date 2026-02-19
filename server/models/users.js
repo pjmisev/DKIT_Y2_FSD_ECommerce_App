@@ -6,7 +6,8 @@ let userSchema = new mongoose.Schema(
         lname: {type: String},
         email: {type: String},
         password: {type: String},
-        date_created: {type: Date}
+        date_created: {type: Date, default: Date.now},
+        accessLevel: {type: Number, default: 1} // 1 = Normal User, 2 = Admin
     },
     {
         collection: `users`

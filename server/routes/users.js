@@ -1,97 +1,70 @@
 const router = require(`express`).Router()
 const usersModel = require(`../models/users`)
-const createError = require('http-errors');
-const {validateString, validateDate, validateEmail, validatePassword} = require("../lib/validation");
-const {hash} = require("bcrypt");
+const createError = require('http-errors')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
-router.get(`/api/users`, (req, res, next) => {
-    usersModel.find({})
+// Login
+router.post(`/users/login/:email/:password`, (req, res, next) => {
+    usersModel.findOne({email: req.params.email})
         .then(data => {
-            res.json(data)
-        })
-        .catch(err => {
-            next(createError(500, `A server error has occurred.`))
-        });
-})
+            if(!data) {
+                return next(createError(403, `User is not logged in`))
+            }
 
-router.get(`/api/users/:id`, (req, res, next) => {
-    usersModel.findById(req.params.id)
-        .then(data => {
-            res.json(data)
-        })
-        .catch(err => {
-            next(createError(500, `A server error has occurred.`))
-        });
-})
-
-router.post(`/api/users`, async (req, res, next) => {
-    if (
-        validateString(req.body.fname) &&
-        validateString(req.body.lname) &&
-        validateEmail(req.body.email) &&
-        validatePassword(req.body.password) &&
-        validateDate(req.body.date_created)
-    ) {
-
-        try {
-            const saltRounds = parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS) || 10;
-            const hashedPassword = await hash(req.body.password, saltRounds);
-
-            const data = await usersModel.create({
-                fname: req.body.fname,
-                lname: req.body.lname,
-                email: req.body.email,
-                password: hashedPassword,
-                date_created: req.body.date_created
-            });
-
-            res.json(data);
-        } catch
-            (err) {
-            next(createError(500, `A server error has occurred.`));
-        }
-    } else {
-        next(createError(400, `An error has occurred. Please check your input and try again.`))
-    }
-});
-
-router.put(`/api/users/:id`, (req, res, next) => {
-    if (
-        validateString(req.body.fname) &&
-        validateString(req.body.lname) &&
-        validateEmail(req.body.email) &&
-        validateDate(req.body.date_created)
-    ) {
-        usersModel.findByIdAndUpdate(
-            req.params.id,
-            {
-                fname: req.body.fname,
-                lname: req.body.lname,
-                email: req.body.email,
-                date_created: req.body.date_created
-            },
-            {returnDocument: 'after'}
-        )
-            .then(data => {
-                res.json(data);
+            bcrypt.compare(req.params.password, data.password, (err, result) => {
+                if (result) {
+                    const token = jwt.sign(
+                        {email: data.email, accessLevel: data.accessLevel},
+                        process.env.JWT_PRIVATE_KEY,
+                        {algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRY}
+                    )
+                    res.json({name: data.fname, accessLevel: data.accessLevel, token: token})
+                } else {
+                    return next(createError(403, `User is not logged in`))
+                }
             })
-            .catch(err => {
-                next(createError(500, `A server error has occurred.`))
-            });
-    } else {
-        next(createError(400, `An error has occurred. Please check your input and try again.`))
-    }
-
-});
-
-router.delete(`/api/users/:id`, (req, res) => {
-    usersModel.findByIdAndDelete(req.params.id)
-        .then(data => {
-            res.json(data)
         })
-        .catch(err => {
-            next(createError(500, `A server error has occurred.`))
-        });
+        .catch(err => next(createError(500, `Server Error`)))
+})
+
+// Register
+router.post(`/users/register/:name/:email/:password`, (req, res, next) => {
+    usersModel.findOne({email: req.params.email})
+        .then(uniqueData => {
+            if (uniqueData) {
+                return next(createError(403, `User already exists`))
+            } else {
+                // Hash Password
+                bcrypt.hash(req.params.password, parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS), (err, hash) => {
+
+                    // Create User
+                    usersModel.create({
+                        fname: req.params.name,
+                        lname: req.params.lname,
+                        email: req.params.email,
+                        password: hash,
+                        accessLevel: parseInt(process.env.ACCESS_LEVEL_NORMAL_USER)
+                    })
+                        .then(data => {
+                            const token = jwt.sign(
+                                {email: data.email, accessLevel: data.accessLevel},
+                                process.env.JWT_PRIVATE_KEY,
+                                {algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRY}
+                            )
+
+                            res.json({name: data.fname, accessLevel: data.accessLevel, token: token})
+                        })
+                        .catch(err => next(createError(409, `User was not registered`)))
+                })
+            }
+        })
+        .catch(err => next(err))
+})
+
+// Logout
+router.post(`/users/logout`, (req, res, next) => {
+    res.json({})
 })
 
 module.exports = router

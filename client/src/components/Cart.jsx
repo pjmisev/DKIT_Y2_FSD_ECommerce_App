@@ -1,4 +1,4 @@
-export default function Cart() {
+export const Cart = props => {
     return (
         <div>
             <h1>Your Cart</h1>

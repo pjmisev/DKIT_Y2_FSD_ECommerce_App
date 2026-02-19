@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function Test() {
+export const Test = props => {
     const [products, setProducts] = useState([]);
     const [selectedId, setSelectedId] = useState('');
     const [singleProduct, setSingleProduct] = useState(null);
@@ -43,7 +43,9 @@ export default function Test() {
     const createProduct = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post(`${API_URL}/products`, formData);
+            const { data } = await axios.post(`${API_URL}/products`, formData, {
+                headers: { "authorization": localStorage.token }
+            });
             console.log('Created:', data);
             fetchProducts();
             // Clear form
@@ -138,7 +140,7 @@ export default function Test() {
                     Refresh Products
                 </button>
 
-                {products.length === 0 ? (
+                {products?.length === 0 ? (
                     <p style={{ color: 'black' }}>No products found</p>
                 ) : (
                     <table style={tableStyle}>
@@ -157,7 +159,7 @@ export default function Test() {
                         </tr>
                         </thead>
                         <tbody>
-                        {products.map((product) => (
+                        {products?.map((product) => (
                             <tr key={product._id}>
                                 <td style={tdStyle}>{product._id}</td>
                                 <td style={tdStyle}>{product.category}</td>

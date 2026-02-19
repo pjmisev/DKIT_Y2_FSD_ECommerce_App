@@ -2,6 +2,7 @@ const router = require(`express`).Router()
 const productsModel = require(`../models/products`)
 const {validateString, validatePrice, validateDate} = require("../lib/validation");
 const createError = require("http-errors");
+const jwt = require('jsonwebtoken')
 
 router.get(`/api/products`, (req, res, next) =>
 {
@@ -28,38 +29,55 @@ router.get(`/api/products/:id`, (req, res, next) => {
 
 router.post(`/api/products`, (req, res, next) =>
 {
-    if(
-        validateString(req.body.category) &&
-        validateString(req.body.brand) &&
-        validateString(req.body.model) &&
-        validateString(req.body.description) &&
-        validateString(req.body.colour) &&
-        validateDate(req.body.release_date) &&
-        validateString(req.body.energy_rating) &&
-        validatePrice(req.body.price)
-    ){
-        productsModel.create([
+    jwt.verify(req.headers.authorization, process.env.JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
+    {
+        if (err)
+        {
+            return next(createError(403, `User is not logged in`))
+        }
+        else
+        {
+            if(decodedToken.accessLevel >= process.env.ACCESS_LEVEL_ADMIN)
             {
-                category: req.body.category,
-                brand: req.body.brand,
-                model: req.body.model,
-                description: req.body.description,
-                colour: req.body.colour,
-                release_date: req.body.release_date,
-                energy_rating: req.body.energy_rating,
-                price: req.body.price
+                if(
+                    validateString(req.body.category) &&
+                    validateString(req.body.brand) &&
+                    validateString(req.body.model) &&
+                    validateString(req.body.description) &&
+                    validateString(req.body.colour) &&
+                    validateDate(req.body.release_date) &&
+                    validateString(req.body.energy_rating) &&
+                    validatePrice(req.body.price)
+                ){
+                    productsModel.create([
+                        {
+                            category: req.body.category,
+                            brand: req.body.brand,
+                            model: req.body.model,
+                            description: req.body.description,
+                            colour: req.body.colour,
+                            release_date: req.body.release_date,
+                            energy_rating: req.body.energy_rating,
+                            price: req.body.price
+                        }
+                    ])
+                        .then(data =>
+                        {
+                            res.json(data)
+                        })
+                        .catch(err => {
+                            next(createError(500, `A server error has occurred.`))
+                        });
+                } else {
+                    next(createError(400, `An error has occurred. Please check your input and try again.`))
+                }
             }
-        ])
-            .then(data =>
+            else
             {
-                res.json(data)
-            })
-            .catch(err => {
-                next(createError(500, `A server error has occurred.`))
-            });
-    } else {
-        next(createError(400, `An error has occurred. Please check your input and try again.`))
-    }
+                return next(createError(403, `User is not an administrator`))
+            }
+        }
+    })
 })
 
 router.put(`/api/products/:id`, (req, res, next) => {

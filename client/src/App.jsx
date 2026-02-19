@@ -1,17 +1,46 @@
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router';
 
-import Home from './components/Home.jsx';
-import Products from './components/Products.jsx';
-import Cart from './components/Cart.jsx';
-import Test from './components/Test.jsx';
+import { Home } from './components/Home.jsx';
+import { Products } from './components/Products.jsx';
+import { Cart } from './components/Cart.jsx';
+import { Test } from './components/Test.jsx';
+
+import { Login } from './components/Login.jsx';
+import { Register } from './components/Register.jsx';
+import { Logout } from './components/Logout.jsx';
+
+import { ACCESS_LEVEL_GUEST } from './config/global_constants';
+
+if (typeof localStorage.accessLevel === "undefined") {
+    localStorage.name = "GUEST"
+    localStorage.accessLevel = ACCESS_LEVEL_GUEST
+    localStorage.token = null
+}
 
 function App() {
+    const [userLevel, setUserLevel] = useState(parseInt(localStorage.accessLevel));
+
+    const handleLoginState = () => {
+        setUserLevel(parseInt(localStorage.accessLevel));
+    }
+
     return (
         <BrowserRouter>
             <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
                 <Link to="/" style={{ marginRight: '10px' }}>Home</Link>
                 <Link to="/products" style={{ marginRight: '10px' }}>Products</Link>
                 <Link to="/cart" style={{ marginRight: '10px' }}>Cart</Link>
+                {
+                    userLevel > ACCESS_LEVEL_GUEST
+                        ?
+                        <Link to="/logout" style={{ marginRight: '10px' }}>Logout</Link>
+                        :
+                        <>
+                            <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
+                            <Link to="/register" style={{ marginRight: '10px' }}>Register</Link>
+                        </>
+                }
                 <Link to="/test">Test</Link>
             </nav>
 
@@ -21,6 +50,9 @@ function App() {
                     <Route path="/products" element={<Products />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/test" element={<Test />} />
+                    <Route path="/login" element={<Login onLoginChange={handleLoginState} />} />
+                    <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
+                    <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
                 </Routes>
             </main>

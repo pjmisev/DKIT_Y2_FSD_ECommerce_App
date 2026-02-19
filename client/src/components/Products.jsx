@@ -1,4 +1,4 @@
-export default function Products() {
+export const Products = props => {
     return (
         <div>
             <h1>Products</h1>
