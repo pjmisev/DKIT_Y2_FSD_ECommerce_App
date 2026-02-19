@@ -4,6 +4,9 @@ const createError = require('http-errors')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+const fs = require('fs')
+const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
+
 // Login
 router.post(`/users/login/:email/:password`, (req, res, next) => {
     usersModel.findOne({email: req.params.email})
@@ -16,7 +19,7 @@ router.post(`/users/login/:email/:password`, (req, res, next) => {
                 if (result) {
                     const token = jwt.sign(
                         {email: data.email, accessLevel: data.accessLevel},
-                        process.env.JWT_PRIVATE_KEY,
+                        JWT_PRIVATE_KEY,
                         {algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRY}
                     )
                     res.json({name: data.fname, accessLevel: data.accessLevel, token: token})
@@ -49,7 +52,7 @@ router.post(`/users/register/:name/:email/:password`, (req, res, next) => {
                         .then(data => {
                             const token = jwt.sign(
                                 {email: data.email, accessLevel: data.accessLevel},
-                                process.env.JWT_PRIVATE_KEY,
+                                JWT_PRIVATE_KEY,
                                 {algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRY}
                             )
 
