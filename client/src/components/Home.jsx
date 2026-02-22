@@ -3,24 +3,63 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 export const Home = () => {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState([]); // Stores all products
+    const [filteredProducts, setFilteredProducts] = useState([]); // Stores the list after sorting/filtering
+    const [sortOption, setSortOption] = useState(''); // Sorting state
+    const [filterCategory, setFilterCategory] = useState(''); // Filter category state
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_URL = 'http://localhost:4000/api';
+    const API_URL = 'http://localhost:4000/api'; // Replace with your server endpoint
+
+    // Fetch all products from the server
     useEffect(() => {
         setIsLoading(true);
-        axios.get(`${API_URL}/products`)
+        axios
+            .get(`${API_URL}/products`)
             .then((response) => {
-                setProducts(response.data);
-                setIsLoading(false);
+                setProducts(response.data); // Store all products
+                setFilteredProducts(response.data); // Set initial view
             })
             .catch((err) => {
                 console.error('Error fetching products:', err);
                 setError("Failed to load products. Please ensure the server is running.");
-                setIsLoading(false);
+            })
+            .finally(() => {
+                setIsLoading(false); // Always stop loading after the request
             });
     }, []);
+
+    // Handles sorting
+    const handleSort = (e) => {
+        const sortValue = e.target.value;
+        setSortOption(sortValue);
+
+        let sortedProducts = [...filteredProducts];
+        if (sortValue === 'price-asc') {
+            sortedProducts.sort((a, b) => a.price - b.price); // Sort by price ascending
+        } else if (sortValue === 'price-desc') {
+            sortedProducts.sort((a, b) => b.price - a.price); // Sort by price descending
+        } else if (sortValue === 'name-asc') {
+            sortedProducts.sort((a, b) => a.model.localeCompare(b.model)); // Sort by name ascending
+        } else if (sortValue === 'name-desc') {
+            sortedProducts.sort((a, b) => b.model.localeCompare(a.model)); // Sort by name descending
+        }
+        setFilteredProducts(sortedProducts);
+    };
+
+    // Handles filtering
+    const handleFilter = (e) => {
+        const category = e.target.value;
+        setFilterCategory(category);
+
+        if (category === '') {
+            setFilteredProducts(products); // Reset to all products if filter is cleared
+        } else {
+            const filtered = products.filter((product) => product.category === category);
+            setFilteredProducts(filtered);
+        }
+    };
 
     if (isLoading) {
         return <div>Loading products...</div>;
@@ -30,17 +69,45 @@ export const Home = () => {
         return <div>{error}</div>;
     }
 
+    const uniqueCategories = [...new Set(products.map((product) => product.category))]; // Extract unique categories from products
+
     return (
         <div>
+            {/* Hero Section */}
             <header style={{ textAlign: 'center', padding: '20px 0' }}>
                 <h1>Welcome to Sustainable Living Store</h1>
                 <p>Your one-stop shop for eco-friendly home appliances.</p>
             </header>
 
+            {/* Sorting and Filtering Options */}
+            <section style={{ margin: '20px 0', textAlign: 'center' }}>
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                    {/* Filter by Category */}
+                    <select value={filterCategory} onChange={handleFilter} style={{ padding: '10px' }}>
+                        <option value="">All Categories</option>
+                        {uniqueCategories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Sort Options */}
+                    <select value={sortOption} onChange={handleSort} style={{ padding: '10px' }}>
+                        <option value="">Sort By</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="name-asc">Name: A to Z</option>
+                        <option value="name-desc">Name: Z to A</option>
+                    </select>
+                </div>
+            </section>
+
+            {/* Featured Products Section */}
             <section style={{ margin: '20px 0', textAlign: 'center' }}>
                 <h2>Our Products</h2>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                    {products.map((product) => (
+                    {filteredProducts.map((product) => (
                         <div
                             key={product._id}
                             style={{
@@ -52,7 +119,7 @@ export const Home = () => {
                             }}
                         >
                             <img
-                                src={product.image}//images not implemented yet
+                                src={product.image}// Mock images for now
                                 alt={product.model}
                                 style={{ width: '100%', height: '150px', objectFit: 'cover' }}
                             />
