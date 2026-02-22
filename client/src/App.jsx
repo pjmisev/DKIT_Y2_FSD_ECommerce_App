@@ -9,6 +9,7 @@ import { Test } from './components/Test.jsx';
 import { Login } from './components/Login.jsx';
 import { Register } from './components/Register.jsx';
 import { Logout } from './components/Logout.jsx';
+import { DisplayProduct } from './components/DisplayProduct.jsx';
 
 import { ACCESS_LEVEL_GUEST } from './config/global_constants';
 
@@ -53,6 +54,7 @@ function App() {
                     <Route path="/login" element={<Login onLoginChange={handleLoginState} />} />
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
+                    <Route path="/products/:id" element={<DisplayProduct />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
                 </Routes>
             </main>
