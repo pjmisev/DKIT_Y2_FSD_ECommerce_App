@@ -9,7 +9,8 @@ let productsSchema = new mongoose.Schema(
         colour: {type: String},
         release_date: {type: Date},
         energy_rating: {type: String},
-        price: {type: Number}
+        price: {type: Number},
+        image: {type: String, default: ""}
     },
     {
         collection: `products`

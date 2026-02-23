@@ -39,11 +39,19 @@ export const DisplayProduct = () => {
     return (
         <div style={{ padding: "20px" }}>
             <h1>{product.model}</h1>
-            <img
-                src={product.image || "/images/placeholder.jpg"} // Placeholder image if no product image available
-                alt={product.model}
-                style={{ width: "100%", maxWidth: "400px", height: "auto", objectFit: "contain" }}
-            />
+            {product.image ? (
+                <img
+                    src={`data:;base64,${product.image}`}
+                    alt={product.model}
+                    style={{ width: "100%", maxWidth: "400px", height: "auto", objectFit: "contain" }}
+                />
+            ) : (
+                <img
+                    src="/images/placeholder.jpg"
+                    alt="Placeholder"
+                    style={{ width: "100%", maxWidth: "400px" }}
+                />
+            )}
             <p>Category: {product.category}</p>
             <p>Brand: {product.brand}</p>
             <p>Colour: {product.colour}</p>

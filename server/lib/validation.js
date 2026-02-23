@@ -40,10 +40,26 @@ const validatePassword = (input) => {
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(input);
 }
 
+const validateFile = (file) => {
+    if(!file)
+    {
+        console.log("No file uploaded");
+        return false;
+    }
+    else if(file.mimetype !== "image/png" && file.mimetype !== "image/jpg" && file.mimetype !== "image/jpeg")
+    {
+        console.log("Invalid file type");
+        return false;
+    }
+    console.log("File uploaded successfully");
+    return true;
+}
+
 module.exports = {
     validateString,
     validatePrice,
     validateDate,
     validateEmail,
-    validatePassword
+    validatePassword,
+    validateFile
 };

@@ -39,26 +39,41 @@ export const Test = props => {
         }
     };
 
+    const handleFileChange = e =>
+    {
+        setSelectedFile(e.target.files[0])
+    }
+
+    const [selectedFile, setSelectedFile] = useState(null)
+
     // POST new product
     const createProduct = async (e) => {
         e.preventDefault();
+        const dataToSend = new FormData();
+
+        Object.keys(formData).forEach(key => {
+            dataToSend.append(key, formData[key]);
+        });
+
+        if (selectedFile) {
+            dataToSend.append("image", selectedFile);
+        }
+
         try {
-            const { data } = await axios.post(`${API_URL}/products`, formData, {
-                headers: { "authorization": localStorage.token }
+            const { data } = await axios.post(`${API_URL}/products`, dataToSend, {
+                headers: {
+                    "authorization": localStorage.token,
+                }
             });
+
             console.log('Created:', data);
             fetchProducts();
-            // Clear form
+
             setFormData({
-                category: '',
-                brand: '',
-                model: '',
-                description: '',
-                colour: '',
-                release_date: '',
-                energy_rating: '',
-                price: ''
+                category: '', brand: '', model: '', description: '',
+                colour: '', release_date: '', energy_rating: '', price: ''
             });
+            setSelectedFile(null);
         } catch (err) {
             console.error('Error creating product:', err);
         }
@@ -67,10 +82,28 @@ export const Test = props => {
     // PUT update product
     const updateProduct = async () => {
         if (!selectedId) return;
+
+        const dataToSend = new FormData();
+
+        Object.keys(formData).forEach(key => {
+            dataToSend.append(key, formData[key]);
+        });
+
+        if (selectedFile) {
+            dataToSend.append("image", selectedFile);
+        }
+
         try {
-            const { data } = await axios.put(`${API_URL}/products/${selectedId}`, formData);
+            const { data } = await axios.put(`${API_URL}/products/${selectedId}`, dataToSend, {
+                headers: {
+                    "authorization": localStorage.token
+                }
+            });
+
             console.log('Updated:', data);
             fetchProducts();
+
+            setSelectedFile(null);
         } catch (err) {
             console.error('Error updating product:', err);
         }
@@ -268,6 +301,10 @@ export const Test = props => {
                         value={formData.price}
                         onChange={(e) => setFormData({...formData, price: e.target.value})}
                         style={{ padding: '8px', color: 'black', backgroundColor: 'white', border: '1px solid #ddd' }}
+                    />
+                    <input
+                        type = "file"
+                        onChange = {handleFileChange}
                     />
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
