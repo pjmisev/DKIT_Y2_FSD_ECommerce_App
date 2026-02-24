@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 export const Home = () => {
     return (
-        <div style={{ textAlign: 'center', padding: '50px' }}>
+        <div className="home-content">
             {/* Welcome Section */}
-            <header style={{ marginBottom: '30px' }}>
+            <header>
                 <h1>Welcome to Sustainable Living Store</h1>
                 <p>Your one-stop destination for eco-friendly home appliances.</p>
             </header>
