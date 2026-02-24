@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const Test = props => {
+export const AdminHome = props => {
     const [products, setProducts] = useState([]);
     const [selectedId, setSelectedId] = useState('');
     const [singleProduct, setSingleProduct] = useState(null);

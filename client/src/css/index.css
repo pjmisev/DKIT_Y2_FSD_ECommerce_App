@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -80,4 +84,114 @@ button:focus-visible {
 
 .home-content header{
     margin-bottom: 2rem;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #151414;
+    padding: 0 20px;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    z-index: 1000;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.logo {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+.desktop-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-link {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.avatar-circle {
+    width: 35px;
+    height: 35px;
+    background-color: #333;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: 1px solid #555;
+    font-weight: bold;
+}
+
+.avatar-circle:hover {
+    background-color: #555;
+}
+
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.mobile-menu {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: #151414;
+    border-bottom: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+}
+
+.mobile-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    border-bottom: 1px solid #222;
+}
+
+.mobile-menu a:hover {
+    background-color: #222;
+}
+
+.mobile-divider {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .desktop-links {
+        display: none;
+    }
+
+    .hamburger-btn {
+        display: block;
+    }
 }

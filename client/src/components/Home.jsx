@@ -6,8 +6,8 @@ export const Home = () => {
         <div className="home-content">
             {/* Welcome Section */}
             <header>
-                <h1>Welcome to Sustainable Living Store</h1>
-                <p>Your one-stop destination for eco-friendly home appliances.</p>
+                <h1>Welcome to Sustiances</h1>
+                <p>A sustainable living store, your one-stop destination for eco-friendly home appliances.</p>
             </header>
 
             {/* Main Menu */}

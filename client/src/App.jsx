@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router';
 import { Home } from './components/Home.jsx';
 import { Products } from './components/Products.jsx';
 import { Cart } from './components/Cart.jsx';
-import { Test } from './components/Test.jsx';
 
 import { Login } from './components/Login.jsx';
 import { Register } from './components/Register.jsx';
@@ -12,7 +11,8 @@ import { Logout } from './components/Logout.jsx';
 import { DisplayProduct } from './components/DisplayProduct.jsx';
 import { User } from './components/User.jsx';
 
-import { ACCESS_LEVEL_GUEST } from './config/global_constants';
+import {ACCESS_LEVEL_ADMIN, ACCESS_LEVEL_GUEST} from './config/global_constants';
+import {AdminHome} from "./components/admin/AdminHome.jsx";
 
 if (typeof localStorage.accessLevel === "undefined") {
     localStorage.name = "GUEST"
@@ -22,56 +22,95 @@ if (typeof localStorage.accessLevel === "undefined") {
 
 function App() {
     const [userLevel, setUserLevel] = useState(parseInt(localStorage.accessLevel));
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const closeMenu = () => {
+        setIsMobileMenuOpen(false);
+    };
 
     const handleLoginState = () => {
         setUserLevel(parseInt(localStorage.accessLevel));
-    }
+    };
 
     return (
         <BrowserRouter>
-            <nav
-                style={{
-                    padding: '10px',
-                    borderBottom: '1px solid #ccc',
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    backgroundColor: '#151414',
-                    zIndex: 1000,
-                }}
-            >
-                <Link to="/" style={{ marginRight: '10px' }}>Home</Link>
-                <Link to="/products" style={{ marginRight: '10px' }}>Products</Link>
-                <Link to="/cart" style={{ marginRight: '10px' }}>Cart</Link>
-                {
-                    userLevel > ACCESS_LEVEL_GUEST
-                        ? (
-                            <Link to="/logout" style={{ marginRight: '10px' }}>Logout</Link>
-                        )
-                        : (
+            <nav className="navbar">
+                <div className="nav-left">
+                    <Link to="/" className="logo">Sustiances</Link>
+                    <div className="desktop-links">
+                        <Link to="/" className="nav-link">Home</Link>
+                        <Link to="/products" className="nav-link">Products</Link>
+                        {userLevel === ACCESS_LEVEL_ADMIN && (
+                            <Link to="/admin/home" className="nav-link">Admin</Link>
+                        )}
+                    </div>
+                </div>
+
+                <div className="nav-right desktop-links">
+                    <Link to="/cart" className="nav-link">Cart</Link>
+
+                    {userLevel > ACCESS_LEVEL_GUEST ? (
+                        <>
+                            <Link to="/user" className="avatar-circle">
+                                U
+                            </Link>
+                            <Link to="/logout" className="nav-link">Logout</Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="nav-link">Login</Link>
+                            <Link to="/register" className="nav-link">Register</Link>
+                        </>
+                    )}
+                </div>
+
+                <button className="hamburger-btn" onClick={toggleMenu}>
+                    ☰
+                </button>
+
+                {isMobileMenuOpen && (
+                    <div className="mobile-menu">
+                        <Link to="/" onClick={closeMenu}>Home</Link>
+                        <Link to="/products" onClick={closeMenu}>Products</Link>
+                        <Link to="/cart" onClick={closeMenu}>Cart</Link>
+
+                        {userLevel === ACCESS_LEVEL_ADMIN && (
+                            <Link to="/admin/home" onClick={closeMenu}>Admin</Link>
+                        )}
+
+                        <hr className="mobile-divider" />
+
+                        {userLevel > ACCESS_LEVEL_GUEST ? (
                             <>
-                                <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
-                                <Link to="/register" style={{ marginRight: '10px' }}>Register</Link>
+                                <Link to="/user" onClick={closeMenu}>Profile</Link>
+                                <Link to="/logout" onClick={closeMenu}>Logout</Link>
                             </>
-                        )
-                }
-                <Link to={"/user"} style={{ marginRight: '10px' }}>User</Link>
-                <Link to="/test">Test</Link>
+                        ) : (
+                            <>
+                                <Link to="/login" onClick={closeMenu}>Login</Link>
+                                <Link to="/register" onClick={closeMenu}>Register</Link>
+                            </>
+                        )}
+                    </div>
+                )}
             </nav>
 
-            <main style={{ padding: '20px' }}>
+            <main style={{ padding: '80px 20px 20px 20px' }}>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/cart" element={<Cart />} />
-                    <Route path="/test" element={<Test />} />
                     <Route path="/login" element={<Login onLoginChange={handleLoginState} />} />
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
                     <Route path="/products/:id" element={<DisplayProduct />} />
                     <Route path="/user" element={<User />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
+                    <Route path="/admin/home" element={<AdminHome />} />
                 </Routes>
             </main>
         </BrowserRouter>
