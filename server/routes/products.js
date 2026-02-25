@@ -30,6 +30,22 @@ const getProductImage = (product) => {
 };
 
 
+router.get(`/api/products/featured`, (req, res, next) =>
+{
+    productsModel.find({}).limit(3)
+        .then(data =>
+        {
+            const imagePromises = data.map(product => getProductImage(product));
+
+            Promise.all(imagePromises)
+                .then(productsWithImages => {
+                    res.json(productsWithImages);
+                })
+                .catch(err => next(createError(500, `Error processing images`)));
+        })
+        .catch(err => next(createError(500, `A server error has occurred.`)));
+})
+
 router.get(`/api/products`, (req, res, next) =>
 {
     productsModel.find({})

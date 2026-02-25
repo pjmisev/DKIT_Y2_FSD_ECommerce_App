@@ -99,7 +99,7 @@ function App() {
                 )}
             </nav>
 
-            <main style={{ padding: '80px 20px 20px 20px' }}>
+            <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />

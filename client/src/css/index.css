@@ -28,8 +28,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /*display: flex;*/
+  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
 }
@@ -56,6 +56,306 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Home Page Styles */
+.home-container {
+    min-height: 100vh;
+    background-color: #242424;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #262c9f 0%, #52269e 100%);
+    padding: 120px 20px 80px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.02)"/><circle cx="10" cy="50" r="0.5" fill="rgba(255,255,255,0.02)"/><circle cx="90" cy="30" r="0.5" fill="rgba(255,255,255,0.02)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.1;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Featured Products Section */
+.featured-section {
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.product-card {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.product-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background-color: #2a2a2a;
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 250px;
+    background-color: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.product-info {
+    padding: 25px;
+}
+
+.product-brand {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #646cff;
+    font-weight: 600;
+}
+
+.product-model {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.87);
+    font-weight: 500;
+}
+
+.product-description {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 40px;
+}
+
+.no-products {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.view-all-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* About Section */
+.about-section {
+    background-color: #1a1a1a;
+    padding: 80px 20px;
+}
+
+.about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-content h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.about-text {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.7;
+}
+
+.about-text p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.about-features {
+    display: grid;
+    gap: 30px;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 30px;
+    background-color: #242424;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.feature-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.feature-item p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background: linear-gradient(135deg, #646cff 0%, #4a5eff 100%);
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .about-features {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .cta-section h2 {
+        font-size: 2rem;
+    }
+    
+    .featured-section {
+        padding: 60px 15px;
+    }
+    
+    .about-section {
+        padding: 60px 15px;
+    }
+    
+    .cta-section {
+        padding: 60px 15px;
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -198,9 +498,9 @@ button:focus-visible {
 
 /* Admin Panel Styles */
 .admin-container {
+    margin-top: 30px;
     padding: 20px;
     width: 100%;
-    margin: 0;
     background-color: #242424;
     color: rgba(255, 255, 255, 0.87);
     min-height: 100vh;
@@ -259,10 +559,12 @@ button:focus-visible {
     border: 1px solid #333;
     border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.25s;
+    transition: all 0.25s;
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .refresh-button:hover {
@@ -297,14 +599,19 @@ button:focus-visible {
 }
 
 .action-button {
-    padding: 5px 10px;
+    padding: 10px 20px;
     margin-right: 5px;
     background-color: #1a1a1a;
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid #333;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.25s;
+    transition: all 0.25s;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .action-button:hover {
@@ -367,21 +674,30 @@ button:focus-visible {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .primary-button:hover {
     background-color: #535bf2;
     border-color: #535bf2;
+    color: rgba(255, 255, 255, 0.87);
 }
 
 .secondary-button {
     padding: 10px 20px;
+    margin-bottom: 15px;
     background-color: #1a1a1a;
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid #333;
     border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.25s;
+    transition: all 0.25s;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .secondary-button:hover {
@@ -400,6 +716,8 @@ button:focus-visible {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .tertiary-button:hover {
