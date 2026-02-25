@@ -86,7 +86,8 @@ router.post(`/api/products`, upload.single("image"), (req, res, next) =>
             validateString(req.body.colour) &&
             validateDate(req.body.release_date) &&
             validateString(req.body.energy_rating) &&
-            validatePrice(req.body.price))
+            validatePrice(req.body.price) &&
+            validateString(req.body.stocking_status))
         {
             productsModel.create({
                 category: req.body.category,
@@ -97,7 +98,10 @@ router.post(`/api/products`, upload.single("image"), (req, res, next) =>
                 release_date: req.body.release_date,
                 energy_rating: req.body.energy_rating,
                 price: req.body.price,
-                image: req.file.filename
+                status: req.body.status || true,
+                image: req.file.filename,
+                stocking_status: req.body.stocking_status,
+                stock_level: req.body.stock_level
             })
                 .then(data => {
                     getProductImage(data).then(response => res.json(response));
@@ -120,7 +124,8 @@ router.put(`/api/products/:id`, upload.single("image"), (req, res, next) => {
         validateString(req.body.colour) &&
         validateDate(req.body.release_date) &&
         validateString(req.body.energy_rating) &&
-        validatePrice(req.body.price)
+        validatePrice(req.body.price) &&
+        validateString(req.body.stocking_status)
     ){
         let updateData = {
             category: req.body.category,
@@ -130,7 +135,10 @@ router.put(`/api/products/:id`, upload.single("image"), (req, res, next) => {
             colour: req.body.colour,
             release_date: req.body.release_date,
             energy_rating: req.body.energy_rating,
-            price: req.body.price
+            price: req.body.price,
+            status: req.body.status !== undefined ? req.body.status === 'true' || req.body.status === true : true,
+            stocking_status: req.body.stocking_status,
+            stock_level: req.body.stock_level
         };
 
         if (req.file) {
@@ -146,8 +154,12 @@ router.put(`/api/products/:id`, upload.single("image"), (req, res, next) => {
                 if(!data) return next(createError(404, "Product not found"));
                 getProductImage(data).then(response => res.json(response));
             })
-            .catch(err => next(createError(500, `A server error has occurred.`)));
+            .catch(err => {
+                console.error('Database update error:', err);
+                next(createError(500, `A server error has occurred.`));
+            });
     } else {
+        console.error('Validation failed for:', req.body);
         next(createError(400, `Invalid input data`));
     }
 });

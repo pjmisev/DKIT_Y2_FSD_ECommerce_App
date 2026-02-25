@@ -10,7 +10,10 @@ let productsSchema = new mongoose.Schema(
         release_date: {type: Date},
         energy_rating: {type: String},
         price: {type: Number},
-        image: {type: String, default: ""}
+        status: {type: Boolean},
+        image: {type: String, default: ""},
+        stocking_status: {type: String, default: "In Stock"},
+        stock_level: {type: Number, default: 0}
     },
     {
         collection: `products`

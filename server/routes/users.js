@@ -8,7 +8,7 @@ const fs = require('fs')
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
 // Login
-router.post(`/users/login/:email/:password`, (req, res, next) => {
+router.post(`/api/users/login/:email/:password`, (req, res, next) => {
     usersModel.findOne({email: req.params.email})
         .then(data => {
             if(!data) {
@@ -32,7 +32,7 @@ router.post(`/users/login/:email/:password`, (req, res, next) => {
 })
 
 // Register
-router.post(`/users/register/:name/:email/:password`, (req, res, next) => {
+router.post(`/api/users/register/:fname/:lname/:email/:password`, (req, res, next) => {
     usersModel.findOne({email: req.params.email})
         .then(uniqueData => {
             if (uniqueData) {
@@ -43,10 +43,11 @@ router.post(`/users/register/:name/:email/:password`, (req, res, next) => {
 
                     // Create User
                     usersModel.create({
-                        fname: req.params.name,
+                        fname: req.params.fname,
                         lname: req.params.lname,
                         email: req.params.email,
                         password: hash,
+                        status: req.body.status || true,
                         accessLevel: parseInt(process.env.ACCESS_LEVEL_NORMAL_USER)
                     })
                         .then(data => {
@@ -65,9 +66,60 @@ router.post(`/users/register/:name/:email/:password`, (req, res, next) => {
         .catch(err => next(err))
 })
 
+// Update user (admin only)
+router.put(`/api/users/:id`, (req, res, next) => {
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
+        if (err) return next(createError(403, `User is not logged in`));
+        if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+        
+        const updateData = {
+            fname: req.body.fname,
+            lname: req.body.lname,
+            email: req.body.email,
+            accessLevel: req.body.accessLevel,
+            status: req.body.status
+        };
+        
+        // Only update password if provided
+        if (req.body.password) {
+            bcrypt.hash(req.body.password, parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS), (err, hash) => {
+                if (err) return next(createError(500, `Error hashing password`));
+                updateData.password = hash;
+                
+                usersModel.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' })
+                    .then(data => {
+                        if(!data) return next(createError(404, "User not found"));
+                        res.json(data);
+                    })
+                    .catch(err => next(createError(500, `Server Error`)));
+            });
+        } else {
+            usersModel.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' })
+                .then(data => {
+                    if(!data) return next(createError(404, "User not found"));
+                    res.json(data);
+                })
+                .catch(err => next(createError(500, `Server Error`)));
+        }
+    });
+});
+
+// Get all users (admin only)
+router.get(`/api/users`, (req, res, next) => {
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
+        if (err) return next(createError(403, `User is not logged in`));
+        if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+        
+        usersModel.find({})
+            .select('-password')
+            .then(data => res.json(data))
+            .catch(err => next(createError(500, `Server Error`)));
+    });
+});
+
 // Logout
-router.post(`/users/logout`, (req, res, next) => {
-    res.json({})
+router.post(`/api/users/logout`, (req, res, next) => {
+    res.json({});
 })
 
 module.exports = router

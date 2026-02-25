@@ -12,7 +12,7 @@ import { DisplayProduct } from './components/DisplayProduct.jsx';
 import { User } from './components/User.jsx';
 
 import {ACCESS_LEVEL_ADMIN, ACCESS_LEVEL_GUEST} from './config/global_constants';
-import {AdminHome} from "./components/admin/AdminHome.jsx";
+import { Admin } from "./components/Admin.jsx";
 
 if (typeof localStorage.accessLevel === "undefined") {
     localStorage.name = "GUEST"
@@ -45,7 +45,7 @@ function App() {
                         <Link to="/" className="nav-link">Home</Link>
                         <Link to="/products" className="nav-link">Products</Link>
                         {userLevel === ACCESS_LEVEL_ADMIN && (
-                            <Link to="/admin/home" className="nav-link">Admin</Link>
+                            <Link to="/admin" className="nav-link">Admin</Link>
                         )}
                     </div>
                 </div>
@@ -79,7 +79,7 @@ function App() {
                         <Link to="/cart" onClick={closeMenu}>Cart</Link>
 
                         {userLevel === ACCESS_LEVEL_ADMIN && (
-                            <Link to="/admin/home" onClick={closeMenu}>Admin</Link>
+                            <Link to="/admin" onClick={closeMenu}>Admin</Link>
                         )}
 
                         <hr className="mobile-divider" />
@@ -110,7 +110,7 @@ function App() {
                     <Route path="/products/:id" element={<DisplayProduct />} />
                     <Route path="/user" element={<User />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
-                    <Route path="/admin/home" element={<AdminHome />} />
+                    <Route path="/admin" element={<Admin />} />
                 </Routes>
             </main>
         </BrowserRouter>

@@ -11,7 +11,7 @@ export const Login = ({ onLoginChange }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        axios.post(`${SERVER_HOST}/users/login/${email}/${password}`)
+        axios.post(`${SERVER_HOST}/api/users/login/${email}/${password}`)
             .then(res => {
                 if(res.data) {
                     if (res.data.errorMessage) {

@@ -12,7 +12,7 @@ export const Register = ({ onLoginChange }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        axios.post(`${SERVER_HOST}/users/register/${name}/${email}/${password}`)
+        axios.post(`${SERVER_HOST}/api/users/register/${name}/${email}/${password}`)
             .then(res => {
                 if(res.data) {
                     if (res.data.errorMessage) {
