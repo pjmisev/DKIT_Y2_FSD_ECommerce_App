@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import {Link} from "react-router";
 
 export const DisplayProduct = () => {
     const { id } = useParams(); // Get the product ID from the URL
@@ -37,7 +38,8 @@ export const DisplayProduct = () => {
 
     // Render product details
     return (
-        <div style={{ padding: "20px" }}>
+        <div style={{ padding: "20px" }}>#
+
             <h1>{product.model}</h1>
             {product.image ? (
                 <img
@@ -46,11 +48,7 @@ export const DisplayProduct = () => {
                     style={{ width: "100%", maxWidth: "400px", height: "auto", objectFit: "contain" }}
                 />
             ) : (
-                <img
-                    src="/images/placeholder.jpg"
-                    alt="Placeholder"
-                    style={{ width: "100%", maxWidth: "400px" }}
-                />
+                <div>Unable to load image</div>
             )}
             <p>Category: {product.category}</p>
             <p>Brand: {product.brand}</p>
@@ -59,6 +57,8 @@ export const DisplayProduct = () => {
             <p>Release Date: {new Date(product.release_date).toLocaleDateString()}</p>
             <p>Price: €{product.price.toFixed(2)}</p>
             <p>Description: {product.description}</p>
+            <button className="action-button">Add to Cart</button>
+            <Link to="/products" className="action-button">Back</Link>
         </div>
     );
 };

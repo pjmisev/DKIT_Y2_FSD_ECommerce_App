@@ -4,13 +4,14 @@ import {Link} from "react-router-dom";
 
 export const Products = props => {
     const [products, setProducts] = useState([]); // Stores all products
-    const [filteredProducts, setFilteredProducts] = useState([]); // Stores the list after sorting/filtering
+    const [searchQuery, setSearchQuery] = useState(''); // Holds the search input value
+    const [filteredProducts, setFilteredProducts] = useState([]); // Displays products based on search
     const [sortOption, setSortOption] = useState(''); // Sorting state
     const [filterCategory, setFilterCategory] = useState(''); // Filter category state
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_URL = 'http://localhost:4000/api'; // Replace with your server endpoint
+    const API_URL = 'http://localhost:4000/api'; 
 
     // Fetch all products from the server
     useEffect(() => {
@@ -29,6 +30,19 @@ export const Products = props => {
                 setIsLoading(false); // Always stop loading after the request
             });
     }, []);
+
+    const handleSearch = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearchQuery(query);
+
+        // Filter products that match model, brand, or category
+        const filtered = products.filter((product) =>
+            product.model.toLowerCase().includes(query) ||
+            product.brand.toLowerCase().includes(query) ||
+            product.category.toLowerCase().includes(query)
+        );
+        setFilteredProducts(filtered);
+    };
 
     // Handles sorting
     const handleSort = (e) => {
@@ -78,7 +92,19 @@ export const Products = props => {
                 <h1>Products</h1>
                 <p>View our great selection of appliances</p>
             </header>
-
+        <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Search by model, brand, or category..."
+            style={{
+                padding: '10px',
+                width: '100%',
+                marginBottom: '20px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+            }}
+        />
             {/* Sorting and Filtering Options */}
             <section style={{ margin: '20px 0', textAlign: 'center' }}>
                 <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
@@ -106,46 +132,109 @@ export const Products = props => {
             {/* Featured Products Section */}
             <section style={{ margin: '20px 0', textAlign: 'center' }}>
                 <h2>Our Products</h2>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                    {filteredProducts.map((product) => (
-                        <div
-                            key={product._id}
-                            style={{
-                                border: '1px solid gray',
-                                borderRadius: '5px',
-                                padding: '10px',
-                                maxWidth: '200px',
-                                textAlign: 'center',
-                            }}
-                        >
-                            <img
-                                src={
-                                    product.image
-                                        ? `data:image/png;base64,${product.image}` // Ensure Base64 rendering
-                                        : '/placeholder.png' // Fallback image for missing product images
-                                }
-                                alt={product.model}
-                                style={{ width: '100%', height: '150px', objectFit: 'cover' }}
-                            />
-                            <p style={{ fontWeight: 'bold', margin: '10px 0' }}>{product.model}</p>
-                            <p>€{product.price.toFixed(2)}</p>
-                            <Link
-                                to={`/products/${product._id}`}
-                                style={{
-                                    display: 'inline-block',
-                                    marginTop: '10px',
-                                    textDecoration: 'none',
-                                    padding: '5px 10px',
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    borderRadius: '5px',
-                                }}
-                            >
-                                View Details
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+                <section>
+                    {filteredProducts?.length === 0 ? (
+                        <p>No products found</p>
+                    ) : (
+                        <>
+                            <table className="data-table">
+                                <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Category</th>
+                                    <th>Brand</th>
+                                    <th>Model</th>
+                                    <th>Price</th>
+                                    <th>Stock Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {filteredProducts?.map((product) => (
+                                    <tr key={product._id}>
+
+                                        <td>
+                                            <img
+                                            src={
+                                                product.image
+                                                    ? `data:image/png;base64,${product.image}` // Ensure Base64 rendering
+                                                    : '/placeholder.png' // Fallback image for missing product images
+                                            }
+                                            alt={product.model}
+                                            style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+                                            />
+                                        </td>
+                                        <td>{product.category}</td>
+                                        <td>{product.brand}</td>
+                                        <td>{product.model}</td>
+                                        <td>€{product.price.toFixed(2)}</td>
+                                        <td>{product.stocking_status}</td>
+                                        <td>
+                                            <button
+                                                className="action-button"
+                                            >
+                                                Add to Cart
+                                            </button>
+                                            <Link
+                                                to={`/products/${product._id}`}
+                                                className="action-button"
+                                            >
+                                                Details
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+
+                            <div className="card-grid">
+
+                                {filteredProducts?.map((product) => (
+                                    <div key={product._id} className="data-card">
+                                        <img
+                                            src={
+                                                product.image
+                                                    ? `data:image/png;base64,${product.image}` // Ensure Base64 rendering
+                                                    : '/placeholder.png' // Fallback image for missing product images
+                                            }
+                                            alt={product.model}
+                                            style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+                                        />
+                                        <div className="card-title">{product.brand} {product.model}</div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Category:</span>
+                                            <span className="card-field-value">{product.category}</span>
+                                        </div>
+
+                                        <div className="card-field">
+                                            <span className="card-field-label">Price:</span>
+                                            <span className="card-field-value">€{product.price.toFixed(2)}</span>
+                                        </div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Stock:</span>
+                                            <span className="card-field-value">{product.stocking_status}</span>
+                                        </div>
+                                        <div className="card-actions">
+                                            <button
+                                                className="action-button"
+                                            >
+                                                Add to Cart
+                                            </button>
+                                            <Link
+                                                to={`/products/${product._id}`}
+                                                className="action-button"
+                                            >
+                                                Details
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </section>
+
+
             </section>
         </div>
     );
