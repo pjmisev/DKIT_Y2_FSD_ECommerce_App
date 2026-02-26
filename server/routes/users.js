@@ -18,7 +18,7 @@ router.post(`/api/users/login/:email/:password`, (req, res, next) => {
             bcrypt.compare(req.params.password, data.password, (err, result) => {
                 if (result) {
                     const token = jwt.sign(
-                        {email: data.email, accessLevel: data.accessLevel},
+                        {id: data._id, email: data.email, accessLevel: data.accessLevel},
                         JWT_PRIVATE_KEY,
                         {algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRY}
                     )
@@ -113,6 +113,20 @@ router.get(`/api/users`, (req, res, next) => {
         usersModel.find({})
             .select('-password')
             .then(data => res.json(data))
+            .catch(err => next(createError(500, `Server Error`)));
+    });
+});
+
+// Get self
+router.get(`/api/user`, (req, res, next) => {
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithms: ['HS256']}, (err, decodedToken) => {
+        if (err) return next(createError(401, `Invalid or expired token`));
+        usersModel.findById(decodedToken.id)
+            .select('-password')
+            .then(user => {
+                if (!user) return next(createError(404, `User not found`));
+                res.json(user);
+            })
             .catch(err => next(createError(500, `Server Error`)));
     });
 });
