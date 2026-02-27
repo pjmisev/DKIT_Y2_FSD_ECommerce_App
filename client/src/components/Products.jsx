@@ -11,7 +11,7 @@ export const Products = props => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_URL = 'http://localhost:4000/api'; 
+    const API_URL = 'http://localhost:4000/api';
 
     // Fetch all products from the server
     useEffect(() => {
@@ -73,6 +73,19 @@ export const Products = props => {
             const filtered = products.filter((product) => product.category === category);
             setFilteredProducts(filtered);
         }
+    };
+
+    const addToCart = (productId) => {
+        const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        if (!existingCart.includes(productId)) {
+            const updatedCart = [...existingCart, productId];
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            alert("Added to cart!");
+        } else {
+            alert("Item already in cart");
+        }
+        // DO NOT call setCartProducts here unless you've defined it at the top of this file.
     };
 
     if (isLoading) {
@@ -170,9 +183,7 @@ export const Products = props => {
                                         <td>€{product.price.toFixed(2)}</td>
                                         <td>{product.stocking_status}</td>
                                         <td>
-                                            <button
-                                                className="action-button"
-                                            >
+                                            <button className="action-button" onClick={() => addToCart(product._id)}>
                                                 Add to Cart
                                             </button>
                                             <Link
@@ -216,7 +227,7 @@ export const Products = props => {
                                         </div>
                                         <div className="card-actions">
                                             <button
-                                                className="action-button"
+                                                className="action-button" onClick={() => addToCart(product._id)}
                                             >
                                                 Add to Cart
                                             </button>

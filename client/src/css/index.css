@@ -925,3 +925,12 @@ button:focus-visible {
         display: none;
     }
 }
+
+.cart-container {
+    margin-top: 30px;
+    padding: 20px;
+    width: 100%;
+    background-color: #242424;
+    color: rgba(255, 255, 255, 0.87);
+    min-height: 100vh;
+}
