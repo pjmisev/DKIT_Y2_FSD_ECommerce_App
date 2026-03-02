@@ -25,6 +25,16 @@ export const Cart = props => {
         }
     }, []);
 
+    const removeFromCart = (productId) => {
+        const existingCartIds = JSON.parse(localStorage.getItem('cart')) || [];
+        const updatedIds = existingCartIds.filter(id => id !== productId);
+        localStorage.setItem('cart', JSON.stringify(updatedIds));
+
+        setCartProducts(prevProducts =>
+            prevProducts.filter(product => product._id !== productId)
+        );
+    };
+
     return (
         <div className="cart-container">
             <h1>Your Cart</h1>
@@ -56,16 +66,12 @@ export const Cart = props => {
                         <td>€{product.price.toFixed(2)}</td>
                         <td>
                             <button
-                                className="action-button-danger"
-                                // TODO onClick={() => removeFromCart(product._id)}
+                                onClick={() => {
+                                    removeFromCart(product._id);
+                                }}
+                                className="action-button delete-button"
                             >
-                                Remove
-                            </button>
-                            <button
-                                className="action-button-danger"
-                                // TODO onClick={() => purchase(product._id)}
-                            >
-                                Purchase
+                                Delete
                             </button>
                         </td>
                     </tr>

@@ -99,7 +99,7 @@ export const Products = props => {
     const uniqueCategories = [...new Set(products.map((product) => product.category))]; // Extract unique categories from products
 
     return (
-        <div>
+        <div className="cart-container">
             {/* Hero Section */}
             <header style={{ textAlign: 'center', padding: '20px 0' }}>
                 <h1>Products</h1>
