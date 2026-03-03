@@ -2,6 +2,10 @@ const mongoose = require(`mongoose`)
 
 let ordersSchema = new mongoose.Schema(
     {
+        fname: {type: String},
+        lname: {type: String},
+        email: {type: String},
+        phone: {type: String},
         total_gross: {type: Number},
         vat: {type: Number},
         delivery_cost: {type: Number},
@@ -13,6 +17,7 @@ let ordersSchema = new mongoose.Schema(
         country: {type: String},
         products: {type: Array, default: []},
         status: {type: String, default: "Pending"},
+        creator_id: {type: String}
     },
     {
         collection: `orders`

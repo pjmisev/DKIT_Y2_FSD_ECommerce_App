@@ -7,7 +7,7 @@ export const Logout = ({ onLoginChange }) => {
     const navigate = useNavigate()
 
     const handleLogout = () => {
-        axios.post(`${SERVER_HOST}/users/logout`)
+        axios.post(`${SERVER_HOST}/api/users/logout`)
             .then(res => {
                 localStorage.clear()
                 localStorage.name = "GUEST"
