@@ -1,78 +1,83 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import { ProductTableRow } from "./ProductTableRow.jsx";
+import { ProductCard } from "./ProductCard.jsx";
+
 
 export const Products = props => {
-    const [products, setProducts] = useState([]); // Stores all products
-    const [searchQuery, setSearchQuery] = useState(''); // Holds the search input value
-    const [filteredProducts, setFilteredProducts] = useState([]); // Displays products based on search
-    const [sortOption, setSortOption] = useState(''); // Sorting state
-    const [filterCategory, setFilterCategory] = useState(''); // Filter category state
+    const [products, setProducts] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [sortOption, setSortOption] = useState('');
+    const [filterCategory, setFilterCategory] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const API_URL = 'http://localhost:4000/api';
 
-    // Fetch all products from the server
+
     useEffect(() => {
         setIsLoading(true);
         axios
             .get(`${API_URL}/products`)
             .then((response) => {
-                setProducts(response.data); // Store all products
-                setFilteredProducts(response.data); // Set initial view
+                setProducts(response.data);
+                setFilteredProducts(response.data);
             })
             .catch((err) => {
                 console.error('Error fetching products:', err);
                 setError("Failed to load products. Please ensure the server is running.");
             })
             .finally(() => {
-                setIsLoading(false); // Always stop loading after the request
+                setIsLoading(false);
             });
     }, []);
+    useEffect(() => {
+        filterAndSortProducts()
+    }, [searchQuery, filterCategory, sortOption, products])
+
+    const filterAndSortProducts = () => {
+        let updatedProducts = [...products];
+
+        if (filterCategory) {
+            updatedProducts = updatedProducts.filter(
+                (product) => product.category === filterCategory
+            );
+        }
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            updatedProducts = updatedProducts.filter(
+                (product) =>
+                    product.model.toLowerCase().includes(query) ||
+                    product.brand.toLowerCase().includes(query) ||
+                    product.category.toLowerCase().includes(query)
+            );
+        }
+
+        if (sortOption === "price-asc") {
+            updatedProducts.sort((a, b) => a.price - b.price);
+        } else if (sortOption === "price-desc") {
+            updatedProducts.sort((a, b) => b.price - a.price);
+        } else if (sortOption === "name-asc") {
+            updatedProducts.sort((a, b) => a.model.localeCompare(b.model));
+        } else if (sortOption === "name-desc") {
+            updatedProducts.sort((a, b) => b.model.localeCompare(a.model));
+        }
+
+        setFilteredProducts(updatedProducts);
+    };
 
     const handleSearch = (e) => {
-        const query = e.target.value.toLowerCase();
-        setSearchQuery(query);
-
-        // Filter products that match model, brand, or category
-        const filtered = products.filter((product) =>
-            product.model.toLowerCase().includes(query) ||
-            product.brand.toLowerCase().includes(query) ||
-            product.category.toLowerCase().includes(query)
-        );
-        setFilteredProducts(filtered);
+        setSearchQuery(e.target.value);
     };
 
-    // Handles sorting
-    const handleSort = (e) => {
-        const sortValue = e.target.value;
-        setSortOption(sortValue);
-
-        let sortedProducts = [...filteredProducts];
-        if (sortValue === 'price-asc') {
-            sortedProducts.sort((a, b) => a.price - b.price); // Sort by price ascending
-        } else if (sortValue === 'price-desc') {
-            sortedProducts.sort((a, b) => b.price - a.price); // Sort by price descending
-        } else if (sortValue === 'name-asc') {
-            sortedProducts.sort((a, b) => a.model.localeCompare(b.model)); // Sort by name ascending
-        } else if (sortValue === 'name-desc') {
-            sortedProducts.sort((a, b) => b.model.localeCompare(a.model)); // Sort by name descending
-        }
-        setFilteredProducts(sortedProducts);
-    };
-
-    // Handles filtering
     const handleFilter = (e) => {
-        const category = e.target.value;
-        setFilterCategory(category);
+        setFilterCategory(e.target.value);
+    };
 
-        if (category === '') {
-            setFilteredProducts(products); // Reset to all products if filter is cleared
-        } else {
-            const filtered = products.filter((product) => product.category === category);
-            setFilteredProducts(filtered);
-        }
+    const handleSort = (e) => {
+        setSortOption(e.target.value);
     };
 
     const addToCart = (productId) => {
@@ -85,7 +90,6 @@ export const Products = props => {
         } else {
             alert("Item already in cart");
         }
-        // DO NOT call setCartProducts here unless you've defined it at the top of this file.
     };
 
     if (isLoading) {
@@ -96,11 +100,10 @@ export const Products = props => {
         return <div>{error}</div>;
     }
 
-    const uniqueCategories = [...new Set(products.map((product) => product.category))]; // Extract unique categories from products
+    const uniqueCategories = [...new Set(products.map((product) => product.category))];
 
     return (
         <div className="cart-container">
-            {/* Hero Section */}
             <header style={{ textAlign: 'center', padding: '20px 0' }}>
                 <h1>Products</h1>
                 <p>View our great selection of appliances</p>
@@ -150,6 +153,7 @@ export const Products = props => {
                         <p>No products found</p>
                     ) : (
                         <>
+                            {/* TABLE VIEW */}
                             <table className="data-table">
                                 <thead>
                                 <tr>
@@ -163,89 +167,29 @@ export const Products = props => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {filteredProducts?.map((product) => (
-                                    <tr key={product._id}>
-
-                                        <td>
-                                            <img
-                                            src={
-                                                product.image
-                                                    ? `data:image/png;base64,${product.image}` // Ensure Base64 rendering
-                                                    : '/placeholder.png' // Fallback image for missing product images
-                                            }
-                                            alt={product.model}
-                                            style={{ width: '100%', height: '150px', objectFit: 'cover' }}
-                                            />
-                                        </td>
-                                        <td>{product.category}</td>
-                                        <td>{product.brand}</td>
-                                        <td>{product.model}</td>
-                                        <td>€{product.price.toFixed(2)}</td>
-                                        <td>{product.stocking_status}</td>
-                                        <td>
-                                            <button className="action-button" onClick={() => addToCart(product._id)}>
-                                                Add to Cart
-                                            </button>
-                                            <Link
-                                                to={`/products/${product._id}`}
-                                                className="action-button"
-                                            >
-                                                Details
-                                            </Link>
-                                        </td>
-                                    </tr>
+                                {filteredProducts.map((product) => (
+                                    <ProductTableRow
+                                        key={product._id}
+                                        product={product}
+                                        addToCart={addToCart}
+                                    />
                                 ))}
                                 </tbody>
                             </table>
 
+                            {/* Card Grid View*/}
                             <div className="card-grid">
-
-                                {filteredProducts?.map((product) => (
-                                    <div key={product._id} className="data-card">
-                                        <img
-                                            src={
-                                                product.image
-                                                    ? `data:image/png;base64,${product.image}` // Ensure Base64 rendering
-                                                    : '/placeholder.png' // Fallback image for missing product images
-                                            }
-                                            alt={product.model}
-                                            style={{ width: '100%', height: '150px', objectFit: 'cover' }}
-                                        />
-                                        <div className="card-title">{product.brand} {product.model}</div>
-                                        <div className="card-field">
-                                            <span className="card-field-label">Category:</span>
-                                            <span className="card-field-value">{product.category}</span>
-                                        </div>
-
-                                        <div className="card-field">
-                                            <span className="card-field-label">Price:</span>
-                                            <span className="card-field-value">€{product.price.toFixed(2)}</span>
-                                        </div>
-                                        <div className="card-field">
-                                            <span className="card-field-label">Stock:</span>
-                                            <span className="card-field-value">{product.stocking_status}</span>
-                                        </div>
-                                        <div className="card-actions">
-                                            <button
-                                                className="action-button" onClick={() => addToCart(product._id)}
-                                            >
-                                                Add to Cart
-                                            </button>
-                                            <Link
-                                                to={`/products/${product._id}`}
-                                                className="action-button"
-                                            >
-                                                Details
-                                            </Link>
-                                        </div>
-                                    </div>
+                                {filteredProducts.map((product) => (
+                                    <ProductCard
+                                        key={product._id}
+                                        product={product}
+                                        addToCart={addToCart}
+                                    />
                                 ))}
                             </div>
                         </>
                     )}
                 </section>
-
-
             </section>
         </div>
     );

@@ -4,20 +4,19 @@ import { useParams } from "react-router-dom";
 import {Link} from "react-router";
 
 export const DisplayProduct = () => {
-    const { id } = useParams(); // Get the product ID from the URL
-    const [product, setProduct] = useState(null); // State to store product details
-    const [isLoading, setIsLoading] = useState(true); // State for loading indicator
-    const [error, setError] = useState(""); // State for error handling
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    const API_URL = "http://localhost:4000/api"; // Backend API URL for fetching products
+    const API_URL = "http://localhost:4000/api";
 
     useEffect(() => {
-        // Fetch product details by ID
         axios
             .get(`${API_URL}/products/${id}`)
             .then((response) => {
-                setProduct(response.data); // Store product details in state
-                setError(""); // Clear any previous errors
+                setProduct(response.data);
+                setError("");
             })
             .catch((err) => {
                 console.error("Error fetching product details:", err);
@@ -26,7 +25,7 @@ export const DisplayProduct = () => {
             .finally(() => {
                 setIsLoading(false); // Stop loading
             });
-    }, [id]); // Re-run when ID changes
+    }, [id]);
 
     if (isLoading) {
         return <div>Loading product details...</div>;
@@ -36,7 +35,6 @@ export const DisplayProduct = () => {
         return <div style={{ color: "red" }}>{error}</div>;
     }
 
-    // Render product details
     return (
         <div style={{ padding: "20px" }}>#
 

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+import {SANDBOX_CLIENT_ID, SERVER_HOST} from "./config/global_constants"
+import {PayPalButtons, PayPalScriptProvider} from "@paypal/react-paypal-js"
+
 
 import { Home } from './components/Home.jsx';
 import { Products } from './components/Products.jsx';
@@ -10,6 +14,8 @@ import { Register } from './components/Register.jsx';
 import { Logout } from './components/Logout.jsx';
 import { DisplayProduct } from './components/DisplayProduct.jsx';
 import { User } from './components/User.jsx';
+import { BuyProduct } from "./components/BuyProduct.jsx";
+import { PayPalMessage } from "./components/PayPalMessage.jsx";
 
 import {ACCESS_LEVEL_ADMIN, ACCESS_LEVEL_GUEST} from './config/global_constants';
 import { Admin } from "./components/Admin.jsx";
@@ -37,6 +43,7 @@ function App() {
     };
 
     return (
+        <PayPalScriptProvider options={{ "client-id": SANDBOX_CLIENT_ID, currency: "EUR" }}>
         <BrowserRouter>
             <nav className="navbar">
                 <div className="nav-left">
@@ -108,12 +115,14 @@ function App() {
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
                     <Route path="/products/:id" element={<DisplayProduct />} />
+                    <Route path="/PayPalMessage/:type/:orderID" element={<PayPalMessage />} />
                     <Route path="/user" element={<User />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
                     <Route path="/admin" element={<Admin />} />
                 </Routes>
             </main>
         </BrowserRouter>
+            </PayPalScriptProvider>
     );
 }
 
