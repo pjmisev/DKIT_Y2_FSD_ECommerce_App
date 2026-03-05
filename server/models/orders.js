@@ -18,7 +18,6 @@ let ordersSchema = new mongoose.Schema(
         products: {type: Array, default: [], required:true},
         status: {type: String, default: "Pending", required:true},
         paypalPaymentID: {type: String},
-        payment_status: {type: Boolean, default: false, required:true},
         creator_id: {type: String, required:true}
     },
     {
