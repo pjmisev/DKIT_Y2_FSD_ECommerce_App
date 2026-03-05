@@ -20,3 +20,4 @@ let productsSchema = new mongoose.Schema(
     })
 
 module.exports = mongoose.model(`products`, productsSchema)
+module.exports.productsSchema = productsSchema
