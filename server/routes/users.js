@@ -8,6 +8,28 @@ const fs = require('fs')
 const {verifyUsersJWTPassword} = require("../lib/authVerification");
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
+const multer = require('multer')
+const upload = multer({dest: `${process.env.UPLOADED_FILES_FOLDER}`})
+
+
+const getUserImage = (user) => {
+    return new Promise((resolve) => {
+        if (!user.image) {
+            resolve({ ...user.toObject(), image: null });
+            return;
+        }
+        const filePath = `${process.env.UPLOADED_FILES_FOLDER}/${user.image}`;
+
+        fs.readFile(filePath, 'base64', (err, fileData) => {
+            if (err) {
+                resolve({ ...user.toObject(), image: null });
+            } else {
+                resolve({ ...user.toObject(), image: fileData });
+            }
+        });
+    });
+};
+
 // Login
 router.post(`/api/users/login/:email/:password`, (req, res, next) => {
     usersModel.findOne({email: req.params.email})
@@ -112,7 +134,14 @@ router.get(`/api/users`, (req, res, next) => {
         
         usersModel.find({})
             .select('-password')
-            .then(data => res.json(data))
+            .then(users => {
+                const imagePromises = users.map(user => getUserImage(user));
+                Promise.all(imagePromises)
+                    .then(usersWithImages => {
+                        res.json(usersWithImages);
+                    })
+                    .catch(err => next(createError(500, `Error processing images`)));
+            })
             .catch(err => next(createError(500, `Server Error`)));
     });
 });
@@ -125,7 +154,37 @@ router.get(`/api/user`, (req, res, next) => {
             .select('-password')
             .then(user => {
                 if (!user) return next(createError(404, `User not found`));
-                res.json(user);
+                getUserImage(user).then(userWithImage => {
+                    res.json(userWithImage);
+                });
+            })
+            .catch(err => next(createError(500, `Server Error`)));
+    });
+});
+
+// Upload profile picture
+router.post(`/api/user/upload-image`, upload.single("image"), (req, res, next) => {
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
+        if (err) return next(createError(401, `Invalid or expired token`));
+        
+        if(!req.file) {
+            return next(createError(400, `No file was selected to be uploaded`));
+        }
+
+        if(req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpg" && req.file.mimetype !== "image/jpeg")
+        {
+            fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, (error) => {
+                return next(createError(400, `Only .png, .jpg and .jpeg format accepted`));
+            })
+            return;
+        }
+
+        usersModel.findByIdAndUpdate(decodedToken.id, {image: req.file.filename}, { returnDocument: 'after' })
+            .then(user => {
+                if(!user) return next(createError(404, `User not found`));
+                getUserImage(user).then(userWithImage => {
+                    res.json(userWithImage);
+                });
             })
             .catch(err => next(createError(500, `Server Error`)));
     });
@@ -143,6 +202,9 @@ router.delete(`/api/users/:id`, (req, res, next) =>
         usersModel.findByIdAndDelete(req.params.id)
             .then(data =>
             {
+                if(data && data.image) {
+                    fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${data.image}`, () => {});
+                }
                 res.json(data)
             })
             .catch(err => next(createError(500, `A server error has occurred.`)));
