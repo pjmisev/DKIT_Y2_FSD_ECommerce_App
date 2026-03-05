@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const fs = require('fs')
-const {verifyUsersJWTPassword} = require("../lib/authVerification");
+const {verifyUsersJWTPassword} = require("../lib/middleware");
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
 const multer = require('multer')
@@ -91,9 +91,7 @@ router.post(`/api/users/register/:fname/:lname/:email/:password`, (req, res, nex
 
 // Update user (admin only)
 router.put(`/api/users/:id`, verifyUsersJWTPassword, (req, res, next) => {
-
-    if (err) return next(createError(403, `User is not logged in`));
-    if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+    if(req.decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
 
     const updateData = {
         fname: req.body.fname,
@@ -127,67 +125,57 @@ router.put(`/api/users/:id`, verifyUsersJWTPassword, (req, res, next) => {
 });
 
 // Get all users (admin only)
-router.get(`/api/users`, (req, res, next) => {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
-        if (err) return next(createError(403, `User is not logged in`));
-        if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
-        
-        usersModel.find({})
-            .select('-password')
-            .then(users => {
-                const imagePromises = users.map(user => getUserImage(user));
-                Promise.all(imagePromises)
-                    .then(usersWithImages => {
-                        res.json(usersWithImages);
-                    })
-                    .catch(err => next(createError(500, `Error processing images`)));
-            })
-            .catch(err => next(createError(500, `Server Error`)));
-    });
+router.get(`/api/users`, verifyUsersJWTPassword, (req, res, next) => {
+    if(req.decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+    
+    usersModel.find({})
+        .select('-password')
+        .then(users => {
+            const imagePromises = users.map(user => getUserImage(user));
+            Promise.all(imagePromises)
+                .then(usersWithImages => {
+                    res.json(usersWithImages);
+                })
+                .catch(err => next(createError(500, `Error processing images`)));
+        })
+        .catch(err => next(createError(500, `Server Error`)));
 });
 
 // Get self
-router.get(`/api/user`, (req, res, next) => {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithms: ['HS256']}, (err, decodedToken) => {
-        if (err) return next(createError(401, `Invalid or expired token`));
-        usersModel.findById(decodedToken.id)
-            .select('-password')
-            .then(user => {
-                if (!user) return next(createError(404, `User not found`));
-                getUserImage(user).then(userWithImage => {
-                    res.json(userWithImage);
-                });
-            })
-            .catch(err => next(createError(500, `Server Error`)));
-    });
+router.get(`/api/user`, verifyUsersJWTPassword, (req, res, next) => {
+    usersModel.findById(req.decodedToken.id)
+        .select('-password')
+        .then(user => {
+            if (!user) return next(createError(404, `User not found`));
+            getUserImage(user).then(userWithImage => {
+                res.json(userWithImage);
+            });
+        })
+        .catch(err => next(createError(500, `Server Error`)));
 });
 
 // Upload profile picture
-router.post(`/api/user/upload-image`, upload.single("image"), (req, res, next) => {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
-        if (err) return next(createError(401, `Invalid or expired token`));
-        
-        if(!req.file) {
-            return next(createError(400, `No file was selected to be uploaded`));
-        }
+router.post(`/api/user/upload-image`, upload.single("image"), verifyUsersJWTPassword, (req, res, next) => {
+    if(!req.file) {
+        return next(createError(400, `No file was selected to be uploaded`));
+    }
 
-        if(req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpg" && req.file.mimetype !== "image/jpeg")
-        {
-            fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, (error) => {
-                return next(createError(400, `Only .png, .jpg and .jpeg format accepted`));
-            })
-            return;
-        }
+    if(req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpg" && req.file.mimetype !== "image/jpeg")
+    {
+        fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, (error) => {
+            return next(createError(400, `Only .png, .jpg and .jpeg format accepted`));
+        })
+        return;
+    }
 
-        usersModel.findByIdAndUpdate(decodedToken.id, {image: req.file.filename}, { returnDocument: 'after' })
-            .then(user => {
-                if(!user) return next(createError(404, `User not found`));
-                getUserImage(user).then(userWithImage => {
-                    res.json(userWithImage);
-                });
-            })
-            .catch(err => next(createError(500, `Server Error`)));
-    });
+    usersModel.findByIdAndUpdate(req.decodedToken.id, {image: req.file.filename}, { returnDocument: 'after' })
+        .then(user => {
+            if(!user) return next(createError(404, `User not found`));
+            getUserImage(user).then(userWithImage => {
+                res.json(userWithImage);
+            });
+        })
+        .catch(err => next(createError(500, `Server Error`)));
 });
 
 // Logout
@@ -196,19 +184,17 @@ router.post(`/api/users/logout`, (req, res, next) => {
 })
 
 // Delete User
-router.delete(`/api/users/:id`, (req, res, next) =>
+router.delete(`/api/users/:id`, verifyUsersJWTPassword, (req, res, next) =>
 {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
-        usersModel.findByIdAndDelete(req.params.id)
-            .then(data =>
-            {
-                if(data && data.image) {
-                    fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${data.image}`, () => {});
-                }
-                res.json(data)
-            })
-            .catch(err => next(createError(500, `A server error has occurred.`)));
-    });
+    usersModel.findByIdAndDelete(req.params.id)
+        .then(data =>
+        {
+            if(data && data.image) {
+                fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${data.image}`, () => {});
+            }
+            res.json(data)
+        })
+        .catch(err => next(createError(500, `A server error has occurred.`)));
 
 })
 

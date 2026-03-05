@@ -1,14 +1,12 @@
 const router = require(`express`).Router()
 const productsModel = require(`../models/products`)
-const {validateString, validatePrice, validateDate, validateFile} = require("../lib/validation"); // Removed validateFile from here, logic moved to route
+const {validateString, validatePrice, validateDate, validateFile} = require("../lib/validation");
 const createError = require("http-errors");
-const jwt = require('jsonwebtoken')
+const {verifyUsersJWTPassword} = require("../lib/middleware");
 const fs = require('fs')
 
 const multer = require('multer')
 const upload = multer({dest: `${process.env.UPLOADED_FILES_FOLDER}`})
-
-const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
 
 const getProductImage = (product) => {
@@ -76,58 +74,54 @@ router.get(`/api/products/:id`, (req, res, next) => {
         .catch(err => next(createError(500, `A server error has occurred.`)));
 })
 
-router.post(`/api/products`, upload.single("image"), (req, res, next) =>
+router.post(`/api/products`, upload.single("image"), verifyUsersJWTPassword, (req, res, next) =>
 {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
+    if(req.decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+
+    if(!req.file) {
+        return next(createError(400, `No file was selected to be uploaded`));
+    }
+
+    if(req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpg" && req.file.mimetype !== "image/jpeg")
     {
-        if (err) return next(createError(403, `User is not logged in`));
-        if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+        fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, (error) => {
+            return next(createError(400, `Only .png, .jpg and .jpeg format accepted`));
+        })
+        return;
+    }
 
-        if(!req.file) {
-            return next(createError(400, `No file was selected to be uploaded`));
-        }
-
-        if(req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpg" && req.file.mimetype !== "image/jpeg")
-        {
-            fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, (error) => {
-                return next(createError(400, `Only .png, .jpg and .jpeg format accepted`));
+    if(validateString(req.body.category) &&
+        validateString(req.body.brand) &&
+        validateString(req.body.model) &&
+        validateString(req.body.description) &&
+        validateString(req.body.colour) &&
+        validateDate(req.body.release_date) &&
+        validateString(req.body.energy_rating) &&
+        validatePrice(req.body.price) &&
+        validateString(req.body.stocking_status))
+    {
+        productsModel.create({
+            category: req.body.category,
+            brand: req.body.brand,
+            model: req.body.model,
+            description: req.body.description,
+            colour: req.body.colour,
+            release_date: req.body.release_date,
+            energy_rating: req.body.energy_rating,
+            price: req.body.price,
+            status: req.body.status || true,
+            image: req.file.filename,
+            stocking_status: req.body.stocking_status,
+            stock_level: req.body.stock_level
+        })
+            .then(data => {
+                getProductImage(data).then(response => res.json(response));
             })
-            return;
-        }
-
-        if(validateString(req.body.category) &&
-            validateString(req.body.brand) &&
-            validateString(req.body.model) &&
-            validateString(req.body.description) &&
-            validateString(req.body.colour) &&
-            validateDate(req.body.release_date) &&
-            validateString(req.body.energy_rating) &&
-            validatePrice(req.body.price) &&
-            validateString(req.body.stocking_status))
-        {
-            productsModel.create({
-                category: req.body.category,
-                brand: req.body.brand,
-                model: req.body.model,
-                description: req.body.description,
-                colour: req.body.colour,
-                release_date: req.body.release_date,
-                energy_rating: req.body.energy_rating,
-                price: req.body.price,
-                status: req.body.status || true,
-                image: req.file.filename,
-                stocking_status: req.body.stocking_status,
-                stock_level: req.body.stock_level
-            })
-                .then(data => {
-                    getProductImage(data).then(response => res.json(response));
-                })
-                .catch(err => next(createError(500, `A server error has occurred.`)));
-        } else {
-            fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, () => {});
-            next(createError(400, `Invalid input data`));
-        }
-    })
+            .catch(err => next(createError(500, `A server error has occurred.`)));
+    } else {
+        fs.unlink(`${process.env.UPLOADED_FILES_FOLDER}/${req.file.filename}`, () => {});
+        next(createError(400, `Invalid input data`));
+    }
 })
 
 router.put(`/api/products/:id`, upload.single("image"), (req, res, next) => {
