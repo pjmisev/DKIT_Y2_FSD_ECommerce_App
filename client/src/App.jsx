@@ -19,6 +19,7 @@ import { PayPalMessage } from "./components/PayPalMessage.jsx";
 
 import {ACCESS_LEVEL_ADMIN, ACCESS_LEVEL_GUEST} from './config/global_constants';
 import { Admin } from "./components/Admin.jsx";
+import {Orders} from "./components/Orders.jsx";
 
 if (typeof localStorage.accessLevel === "undefined") {
     localStorage.name = "GUEST"
@@ -51,6 +52,8 @@ function App() {
                     <div className="desktop-links">
                         <Link to="/" className="nav-link">Home</Link>
                         <Link to="/products" className="nav-link">Products</Link>
+                        <Link to="/orders" className="nav-link">Orders</Link>
+
                         {userLevel === ACCESS_LEVEL_ADMIN && (
                             <Link to="/admin" className="nav-link">Admin</Link>
                         )}
@@ -84,6 +87,7 @@ function App() {
                         <Link to="/" onClick={closeMenu}>Home</Link>
                         <Link to="/products" onClick={closeMenu}>Products</Link>
                         <Link to="/cart" onClick={closeMenu}>Cart</Link>
+                        <Link to="/orders" className="nav-link">Orders</Link>
 
                         {userLevel === ACCESS_LEVEL_ADMIN && (
                             <Link to="/admin" onClick={closeMenu}>Admin</Link>
@@ -114,6 +118,7 @@ function App() {
                     <Route path="/login" element={<Login onLoginChange={handleLoginState} />} />
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
+                    <Route path="/orders" element={<Orders />} />
                     <Route path="/products/:id" element={<DisplayProduct />} />
                     <Route path="/PayPalMessage/:type/:orderID" element={<PayPalMessage />} />
                     <Route path="/user" element={<User />} />
