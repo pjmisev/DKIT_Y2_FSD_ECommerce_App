@@ -162,6 +162,8 @@ export const Admin = props => {
         });
     };
 
+
+
     const loadProductToForm = (product) => {
         setSelectedId(product._id);
         
@@ -266,6 +268,28 @@ export const Admin = props => {
         } catch (err) {
             console.error('Error updating user:', err);
         }
+    };
+
+    const deleteUser = async () => {
+        if (!selectedId) return;
+
+        setConfirmationModal({
+            show: true,
+            title: 'Delete User',
+            message: 'Are you sure you want to delete this user? This action cannot be undone.',
+            onConfirm: async () => {
+                try {
+                    const { data } = await axios.delete(`${API_URL}/users/${selectedId}`);
+                    console.log('Deleted:', data);
+                    fetchUsers();
+                    setSelectedId('');
+                    setConfirmationModal({ show: false, title: '', message: '', onConfirm: null });
+                } catch (err) {
+                    console.error('Error deleting user:', err);
+                    setConfirmationModal({ show: false, title: '', message: '', onConfirm: null });
+                }
+            }
+        });
     };
 
     const loadUserToForm = (user) => {
@@ -493,6 +517,15 @@ export const Admin = props => {
                                             >
                                                 Edit
                                             </button>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedId(user._id);
+                                                    deleteUser();
+                                                }}
+                                                className="action-button delete-button"
+                                            >
+                                                Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -527,6 +560,15 @@ export const Admin = props => {
                                                 className="action-button"
                                             >
                                                 Edit
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedId(user._id);
+                                                    deleteUser();
+                                                }}
+                                                className="action-button delete-button"
+                                            >
+                                                Delete
                                             </button>
                                         </div>
                                     </div>
