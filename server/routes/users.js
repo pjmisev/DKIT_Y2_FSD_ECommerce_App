@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const fs = require('fs')
+const {verifyUsersJWTPassword} = require("../lib/authVerification");
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
 // Login
@@ -67,41 +68,40 @@ router.post(`/api/users/register/:fname/:lname/:email/:password`, (req, res, nex
 })
 
 // Update user (admin only)
-router.put(`/api/users/:id`, (req, res, next) => {
-    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
-        if (err) return next(createError(403, `User is not logged in`));
-        if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
-        
-        const updateData = {
-            fname: req.body.fname,
-            lname: req.body.lname,
-            email: req.body.email,
-            accessLevel: req.body.accessLevel,
-            status: req.body.status
-        };
-        
-        // Only update password if provided
-        if (req.body.password) {
-            bcrypt.hash(req.body.password, parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS), (err, hash) => {
-                if (err) return next(createError(500, `Error hashing password`));
-                updateData.password = hash;
-                
-                usersModel.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' })
-                    .then(data => {
-                        if(!data) return next(createError(404, "User not found"));
-                        res.json(data);
-                    })
-                    .catch(err => next(createError(500, `Server Error`)));
-            });
-        } else {
+router.put(`/api/users/:id`, verifyUsersJWTPassword, (req, res, next) => {
+
+    if (err) return next(createError(403, `User is not logged in`));
+    if(decodedToken.accessLevel < process.env.ACCESS_LEVEL_ADMIN) return next(createError(403, `User is not an administrator`));
+
+    const updateData = {
+        fname: req.body.fname,
+        lname: req.body.lname,
+        email: req.body.email,
+        accessLevel: req.body.accessLevel,
+        status: req.body.status
+    };
+
+    // Only update password if provided
+    if (req.body.password) {
+        bcrypt.hash(req.body.password, parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS), (err, hash) => {
+            if (err) return next(createError(500, `Error hashing password`));
+            updateData.password = hash;
+
             usersModel.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' })
                 .then(data => {
                     if(!data) return next(createError(404, "User not found"));
                     res.json(data);
                 })
                 .catch(err => next(createError(500, `Server Error`)));
-        }
-    });
+        });
+    } else {
+        usersModel.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' })
+            .then(data => {
+                if(!data) return next(createError(404, "User not found"));
+                res.json(data);
+            })
+            .catch(err => next(createError(500, `Server Error`)));
+    }
 });
 
 // Get all users (admin only)
