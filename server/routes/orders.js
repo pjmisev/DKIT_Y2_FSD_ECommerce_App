@@ -1,6 +1,6 @@
 const router = require(`express`).Router()
 const ordersModel = require(`../models/orders`)
-const {validateString} = require("./middleware");
+const {validateString, checkThatUserIsAnAdministrator} = require("./middleware");
 const createError = require("http-errors");
 const {verifyUsersJWTPassword} = require("./middleware");
 
@@ -102,6 +102,6 @@ const updateOrderDocument = (req, res, next) =>
 router.get(`/api/orders`, verifyUsersJWTPassword, getAllOrders)
 router.get(`/api/orders/:id`, verifyUsersJWTPassword, getOneOrder)
 router.post(`/api/orders`, verifyUsersJWTPassword, validateOrderData, createNewOrderDocument)
-router.put(`/api/orders/:id`, verifyUsersJWTPassword, validateOrderUpdateData, updateOrderDocument)
+router.put(`/api/orders/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateOrderUpdateData, updateOrderDocument)
 
 module.exports = router

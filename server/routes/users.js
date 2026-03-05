@@ -4,7 +4,7 @@ const createError = require('http-errors')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
-const {verifyUsersJWTPassword} = require("./middleware");
+const {verifyUsersJWTPassword, checkThatUserIsAnAdministrator} = require("./middleware");
 
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_FILENAME, 'utf8')
 
@@ -30,18 +30,6 @@ const getUserImage = (user) => {
 };
 
 // MIDDLEWARE
-
-const checkThatUserIsAnAdministrator = (req, res, next) =>
-{
-    if(req.decodedToken.accessLevel >= process.env.ACCESS_LEVEL_ADMIN)
-    {
-        next()
-    }
-    else
-    {
-        next(createError(403, `User is not an administrator`))
-    }
-}
 
 // Login Middleware
 const checkThatUserExistsInUsersCollection = (req, res, next) =>
@@ -248,6 +236,6 @@ router.get(`/api/users`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator,
 router.get(`/api/user`, verifyUsersJWTPassword, getSelf)
 router.post(`/api/user/upload-image`, upload.single("image"), verifyUsersJWTPassword, checkThatFileIsUploaded, checkThatFileIsAnImageFile, updateUserProfileImage)
 router.post(`/api/users/logout`, logout)
-router.delete(`/api/users/:id`, verifyUsersJWTPassword, deleteUserDocument)
+router.delete(`/api/users/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, deleteUserDocument)
 
 module.exports = router

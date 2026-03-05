@@ -2,7 +2,7 @@ const router = require(`express`).Router()
 const productsModel = require(`../models/products`)
 const {validateString, validatePrice, validateDate} = require("./middleware");
 const createError = require("http-errors");
-const {verifyUsersJWTPassword} = require("./middleware");
+const {verifyUsersJWTPassword, checkThatUserIsAnAdministrator} = require("./middleware");
 const fs = require('fs')
 
 const multer = require('multer')
@@ -27,18 +27,6 @@ const getProductImage = (product) => {
 };
 
 // MIDDLEWARE
-
-const checkThatUserIsAnAdministrator = (req, res, next) =>
-{
-    if(req.decodedToken.accessLevel >= process.env.ACCESS_LEVEL_ADMIN)
-    {
-        next()
-    }
-    else
-    {
-        next(createError(403, `User is not an administrator`))
-    }
-}
 
 const checkThatFileIsUploaded = (req, res, next) =>
 {
@@ -207,7 +195,7 @@ router.get(`/api/products/featured`, getFeaturedProducts)
 router.get(`/api/products`, getAllProducts)
 router.get(`/api/products/:id`, getOneProduct)
 router.post(`/api/products`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, checkThatFileIsUploaded, checkThatFileIsAnImageFile, validateProductData, createNewProductDocument)
-router.put(`/api/products/:id`, upload.single("image"), validateProductData, checkThatFileIsAnImageFileIfPresent, updateProductDocument)
-router.delete(`/api/products/:id`, deleteProductDocument)
+router.put(`/api/products/:id`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateProductData, checkThatFileIsAnImageFileIfPresent, updateProductDocument)
+router.delete(`/api/products/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, deleteProductDocument)
 
 module.exports = router

@@ -7,6 +7,7 @@ const verifyUsersJWTPassword = (req, res, next) =>
 {
     verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
     {
+        console.log(req.headers.authorization)
         if (err)
         {
             next(createError(403, `User is not logged in`))
@@ -18,6 +19,19 @@ const verifyUsersJWTPassword = (req, res, next) =>
         }
     })
 }
+
+const checkThatUserIsAnAdministrator = (req, res, next) =>
+{
+    if(req.decodedToken.accessLevel >= process.env.ACCESS_LEVEL_ADMIN)
+    {
+        next()
+    }
+    else
+    {
+        next(createError(403, `User is not an administrator`))
+    }
+}
+
 
 const validateString = (input) => {
     if(!input || input === ""){
@@ -78,6 +92,7 @@ const validateFile = (file) => {
 
 module.exports = {
     verifyUsersJWTPassword,
+    checkThatUserIsAnAdministrator,
     validateString,
     validatePrice,
     validateDate,

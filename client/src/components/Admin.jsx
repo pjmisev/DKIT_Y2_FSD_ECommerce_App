@@ -149,7 +149,9 @@ export const Admin = props => {
             message: 'Are you sure you want to delete this product? This action cannot be undone.',
             onConfirm: async () => {
                 try {
-                    const { data } = await axios.delete(`${API_URL}/products/${selectedId}`);
+                    const { data } = await axios.delete(`${API_URL}/products/${selectedId}`,{
+                        headers: { authorization: localStorage.token }
+                    });
                     console.log('Deleted:', data);
                     fetchProducts();
                     setSelectedId('');
@@ -279,7 +281,10 @@ export const Admin = props => {
             message: 'Are you sure you want to delete this user? This action cannot be undone.',
             onConfirm: async () => {
                 try {
-                    const { data } = await axios.delete(`${API_URL}/users/${selectedId}`);
+                    const { data } = await axios.delete(`${API_URL}/users/${selectedId}`,
+                        {
+                            headers: { authorization: localStorage.token }
+                        });
                     console.log('Deleted:', data);
                     fetchUsers();
                     setSelectedId('');
