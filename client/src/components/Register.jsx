@@ -1,10 +1,11 @@
 import React, { useState } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { SERVER_HOST } from "../config/global_constants"
 
 export const Register = ({ onLoginChange }) => {
-    const [name, setName] = useState("")
+    const [fname, setFName] = useState("")
+    const [lname, setLName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
@@ -12,7 +13,7 @@ export const Register = ({ onLoginChange }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        axios.post(`${SERVER_HOST}/api/users/register/${name}/${email}/${password}`)
+        axios.post(`${SERVER_HOST}/api/users/register/${fname}/${lname}/${email}/${password}`)
             .then(res => {
                 if(res.data) {
                     if (res.data.errorMessage) {
@@ -33,7 +34,8 @@ export const Register = ({ onLoginChange }) => {
     return (
         <form onSubmit={handleSubmit}>
             <h3>Register</h3>
-            <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} required /><br/>
+            <input type="text" placeholder="First Name" value={fname} onChange={e => setFName(e.target.value)} required /><br/>
+            <input type="text" placeholder="Last Name" value={lname} onChange={e => setLName(e.target.value)} required /><br/>
             <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required /><br/>
             <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required /><br/>
             <button type="submit">Register</button>

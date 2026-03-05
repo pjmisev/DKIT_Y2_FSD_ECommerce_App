@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { ACCESS_LEVEL_GUEST, SERVER_HOST } from "../config/global_constants"
 
