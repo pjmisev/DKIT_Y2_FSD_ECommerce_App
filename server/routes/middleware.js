@@ -7,7 +7,6 @@ const verifyUsersJWTPassword = (req, res, next) =>
 {
     verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: "HS256"}, (err, decodedToken) =>
     {
-        console.log(req.headers.authorization)
         if (err)
         {
             next(createError(403, `User is not logged in`))
