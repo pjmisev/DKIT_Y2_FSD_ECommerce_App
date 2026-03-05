@@ -43,11 +43,11 @@ router.post(`/api/users/register/:fname/:lname/:email/:password`, (req, res, nex
 
                     // Create User
                     usersModel.create({
-                        fname: req.params.fname,
-                        lname: req.params.lname,
-                        email: req.params.email,
+                        fname: req?.params?.fname,
+                        lname: req?.params?.lname,
+                        email: req?.params?.email,
                         password: hash,
-                        status: req.body.status || true,
+                        status: req?.body?.status || true,
                         accessLevel: parseInt(process.env.ACCESS_LEVEL_NORMAL_USER)
                     })
                         .then(data => {

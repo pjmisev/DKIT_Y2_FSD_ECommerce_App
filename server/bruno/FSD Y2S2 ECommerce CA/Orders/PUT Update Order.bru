@@ -1,0 +1,37 @@
+meta {
+  name: PUT Update Order
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:4000/api/orders/69a70af40248307b5421541d
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "fname": "aaaa",
+    "lname": "User",
+    "email": "test.user@mail.com",
+    "phone": "+353897475748",
+    "total_gross": 21.34,
+    "vat": 1.45,
+    "delivery_cost": 3,
+    "total_net": 30,
+    "address_line_1": "House 1",
+    "address_line_2": "Main Street",
+    "postcode": "H34IJ34",
+    "county": "Monaghan",
+    "country": "Ireland",
+    "products": [1, 2, 3],
+    "status": "Dispatched",
+    "creator_id": "1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

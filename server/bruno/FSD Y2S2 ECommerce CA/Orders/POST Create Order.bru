@@ -1,0 +1,37 @@
+meta {
+  name: POST Create Order
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:4000/api/orders
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "fname": "Test",
+    "lname": "User",
+    "email": "test.user@mail.com",
+    "phone": "+353897475748",
+    "total_gross": 21.34,
+    "vat": 1.45,
+    "delivery_cost": 3,
+    "total_net": 30,
+    "address_line_1": "House 1",
+    "address_line_2": "Main Street",
+    "postcode": "H34IJ34",
+    "county": "Monaghan",
+    "country": "Ireland",
+    "products": [1, 2, 3],
+    "status": "Pending",
+    "creator_id": "1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
