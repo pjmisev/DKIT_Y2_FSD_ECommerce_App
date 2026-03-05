@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import {Link} from "react-router";
+import { Link, useParams } from "react-router-dom";
 
 export const DisplayProduct = () => {
     const { id } = useParams();
