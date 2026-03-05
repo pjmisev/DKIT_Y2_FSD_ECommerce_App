@@ -136,4 +136,18 @@ router.post(`/api/users/logout`, (req, res, next) => {
     res.json({});
 })
 
+// Delete User
+router.delete(`/api/users/:id`, (req, res, next) =>
+{
+    jwt.verify(req.headers.authorization, JWT_PRIVATE_KEY, {algorithm: 'HS256'}, (err, decodedToken) => {
+        usersModel.findByIdAndDelete(req.params.id)
+            .then(data =>
+            {
+                res.json(data)
+            })
+            .catch(err => next(createError(500, `A server error has occurred.`)));
+    });
+
+})
+
 module.exports = router
