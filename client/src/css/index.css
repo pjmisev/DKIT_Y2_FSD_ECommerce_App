@@ -1024,3 +1024,38 @@ button:focus-visible {
     border: 1px solid #bbdefb
 }
 
+.product-details{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.product-details p{
+    margin: 0;
+    background-color: #777777;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.prod-det-but{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 2vh;
+}
+
+.product-details-image{
+    display: flex;
+    justify-content: center;
+}
+
+.product-details-image img{
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    object-fit: contain;
+}
+

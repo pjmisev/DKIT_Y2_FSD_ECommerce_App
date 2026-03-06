@@ -37,25 +37,38 @@ export const DisplayProduct = () => {
     return (
         <div style={{ padding: "20px" }}>#
 
-            <h1>{product.model}</h1>
+            <h1 style={{textAlign: "center"}}><strong>{product.model}</strong></h1>
+
+            <div className="product-details-image">
+
             {product.image ? (
                 <img
                     src={`data:;base64,${product.image}`}
                     alt={product.model}
-                    style={{ width: "100%", maxWidth: "400px", height: "auto", objectFit: "contain" }}
                 />
             ) : (
                 <div>Unable to load image</div>
             )}
-            <p>Category: {product.category}</p>
-            <p>Brand: {product.brand}</p>
-            <p>Colour: {product.colour}</p>
-            <p>Energy Rating: {product.energy_rating}</p>
-            <p>Release Date: {new Date(product.release_date).toLocaleDateString()}</p>
-            <p>Price: €{product.price.toFixed(2)}</p>
-            <p>Description: {product.description}</p>
-            <button className="action-button">Add to Cart</button>
-            <Link to="/products" className="action-button">Back</Link>
+            </div>
+
+            <h2 style={{textAlign: "center"}}>Details:</h2>
+
+            <div className="product-details">
+                <p><strong>Category:</strong> {product.category}</p>
+                <p><strong>Brand:</strong> {product.brand}</p>
+                <p><strong>Colour:</strong> {product.colour}</p>
+                <p><strong>Energy Rating:</strong> {product.energy_rating}</p>
+                <p><strong>Release Date:</strong> {new Date(product.release_date).toLocaleDateString()}</p>
+                <p><strong>Price:</strong> €{product.price.toFixed(2)}</p>
+                <p><strong>Description:</strong> {product.description}</p>
+
+            </div>
+
+            <div className="prod-det-but">
+                <button className="action-button">Add to Cart</button>
+                <Link to="/products" className="action-button">Back</Link>
+            </div>
+
         </div>
     );
 };
