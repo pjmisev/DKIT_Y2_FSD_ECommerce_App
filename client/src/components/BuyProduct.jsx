@@ -1,3 +1,4 @@
+
 import React, {useState} from "react"
 import axios from "axios"
 import {Navigate} from "react-router-dom"
@@ -52,7 +53,7 @@ export const BuyProduct = props =>
     return (
         <div>
             {redirectToPayPalMessage ? <Navigate to={`/PayPalMessage/${payPalMessageType}/${payPalOrderID}`}/> : null}
-                <PayPalButtons style={{layout: "horizontal"}} createOrder={createOrder} onApprove={onApprove} onError={onError} onCancel={onCancel}/>
+            <PayPalButtons style={{layout: "horizontal"}} createOrder={createOrder} onApprove={onApprove} onError={onError} onCancel={onCancel}/>
 
         </div>
     )

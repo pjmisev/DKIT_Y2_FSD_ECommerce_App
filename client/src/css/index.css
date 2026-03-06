@@ -173,6 +173,7 @@ button:focus-visible {
 
 .product-info {
     padding: 25px;
+    text-align: left;
 }
 
 .product-brand {

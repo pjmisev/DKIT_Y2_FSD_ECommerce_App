@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { ProductTableRow } from "./ProductTableRow.jsx";
 import { ProductCard } from "./ProductCard.jsx";
+import { FilterMenu } from "./FilterMenu.jsx";
 
 
 export const Products = props => {
@@ -108,42 +109,16 @@ export const Products = props => {
                 <h1>Products</h1>
                 <p>View our great selection of appliances</p>
             </header>
-        <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Search by model, brand, or category..."
-            style={{
-                padding: '10px',
-                width: '100%',
-                marginBottom: '20px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-            }}
-        />
-            {/* Sorting and Filtering Options */}
-            <section style={{ margin: '20px 0', textAlign: 'center' }}>
-                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                    {/* Filter by Category */}
-                    <select value={filterCategory} onChange={handleFilter} style={{ padding: '10px' }}>
-                        <option value="">All Categories</option>
-                        {uniqueCategories.map((category, index) => (
-                            <option key={index} value={category}>
-                                {category}
-                            </option>
-                        ))}
-                    </select>
 
-                    {/* Sort Options */}
-                    <select value={sortOption} onChange={handleSort} style={{ padding: '10px' }}>
-                        <option value="">Sort By</option>
-                        <option value="price-asc">Price: Low to High</option>
-                        <option value="price-desc">Price: High to Low</option>
-                        <option value="name-asc">Name: A to Z</option>
-                        <option value="name-desc">Name: Z to A</option>
-                    </select>
-                </div>
-            </section>
+            <FilterMenu
+                searchQuery={searchQuery}
+                filterCategory={filterCategory}
+                sortOption={sortOption}
+                onSearchChange={handleSearch}
+                onFilterChange={handleFilter}
+                onSortChange={handleSort}
+                categories={uniqueCategories}
+            />
 
             {/* Featured Products Section */}
             <section style={{ margin: '20px 0', textAlign: 'center' }}>
