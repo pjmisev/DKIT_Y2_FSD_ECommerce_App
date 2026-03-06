@@ -176,6 +176,44 @@ const updateProductDocument = (req, res, next) => {
         });
 }
 
+const calculateCartPricing = (req, res, next) => {
+    const productIds = req.body.productIds || [];
+    
+    if (productIds.length === 0) {
+        return next(createError(400, "No products in cart"));
+    }
+
+    productsModel.find({'_id': {$in: productIds}})
+        .then(products => {
+            // Calculate subtotal from current product prices
+            const subtotal = products.reduce((sum, product) => sum + product.price, 0);
+            
+            // Define pricing constants
+            const SHIPPING_THRESHOLD = 100; // Free shipping over €100
+            const SHIPPING_COST = 7.99; // Standard shipping cost
+            
+            // Calculate shipping (free over threshold)
+            const shippingCost = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+            
+            // Calculate total (no VAT)
+            const total = subtotal + shippingCost;
+            
+            const pricing = {
+                subtotal: parseFloat(subtotal.toFixed(2)),
+                vat: 0, // No VAT
+                shippingCost: parseFloat(shippingCost.toFixed(2)),
+                total: parseFloat(total.toFixed(2)),
+                vatRate: 0, // No VAT
+                shippingThreshold: SHIPPING_THRESHOLD,
+                freeShipping: subtotal >= SHIPPING_THRESHOLD,
+                products: products
+            };
+            
+            res.json(pricing);
+        })
+        .catch(err => next(createError(500, `A server error has occurred.`)));
+};
+
 const deleteProductDocument = (req, res, next) =>
 {
     productsModel.findByIdAndDelete(req.params.id)
@@ -194,6 +232,7 @@ const deleteProductDocument = (req, res, next) =>
 router.get(`/api/products/featured`, getFeaturedProducts)
 router.get(`/api/products`, getAllProducts)
 router.get(`/api/products/:id`, getOneProduct)
+router.post(`/api/products/calculate-pricing`, calculateCartPricing)
 router.post(`/api/products`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, checkThatFileIsUploaded, checkThatFileIsAnImageFile, validateProductData, createNewProductDocument)
 router.put(`/api/products/:id`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateProductData, checkThatFileIsAnImageFileIfPresent, updateProductDocument)
 router.delete(`/api/products/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, deleteProductDocument)

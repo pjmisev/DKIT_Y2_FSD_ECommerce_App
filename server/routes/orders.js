@@ -55,7 +55,6 @@ const createNewOrderDocument = (req, res, next) =>
         email: req.body.email,
         phone: req.body.phone,
         total_gross: req.body.total_gross,
-        vat: req.body.vat,
         delivery_cost: req.body.delivery_cost,
         total_net: req.body.total_net,
         address_line_1: req.body.address_line_1,
@@ -116,23 +115,55 @@ const createPayPalOrder = (req, res, next) => {
 
     productsModel.find({'_id': {$in: productIds}})
         .then(products => {
+            // Extract customer information from PayPal data
+            const firstName = req.body.customerFirstName || req.body.customerName?.split(' ')[0] || "PayPal";
+            const lastName = req.body.customerLastName || req.body.customerName?.split(' ').slice(1).join(' ') || "Customer";
+            
+            // Use pricing breakdown from request, or calculate as fallback
+            let pricing;
+            if (req.body.pricing && req.body.pricing.subtotal !== undefined) {
+                pricing = req.body.pricing;
+            } else {
+                // Fallback calculation (no VAT)
+                const subtotal = products.reduce((sum, product) => sum + product.price, 0);
+                const SHIPPING_THRESHOLD = 100;
+                const SHIPPING_COST = 7.99;
+                const shippingCost = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+                const total = subtotal + shippingCost;
+                
+                pricing = {
+                    subtotal: parseFloat(subtotal.toFixed(2)),
+                    shippingCost: parseFloat(shippingCost.toFixed(2)),
+                    total: parseFloat(total.toFixed(2))
+                };
+            }
+            
             const orderData = {
-                fname: req.body.customerName || "PayPal Customer",
-                lname: req.body.customerName?.split(' ')[1] || "Customer", // Extract last name or use default
+                // Customer name
+                fname: firstName,
+                lname: lastName,
+                
+                // Customer contact information
                 email: req.body.customerEmail || "paypal@example.com",
-                phone: "0000000000", // Default phone number
-                total_gross: price,
-                vat: 0,
-                delivery_cost: 0,
-                total_net: price,
-                address_line_1: "PayPal Purchase",
-                address_line_2: "",
-                postcode: "00000", // Default postcode
-                county: "Online", // Default county
-                country: "Online", // Default country
+                phone: req.body.customerPhone || "0000000000",
+                
+                // Order pricing (use calculated breakdown)
+                total_gross: pricing.total,
+                delivery_cost: pricing.shippingCost,
+                total_net: pricing.subtotal,
+                
+                // Customer address (from PayPal)
+                address_line_1: req.body.addressLine1 || "PayPal Purchase",
+                address_line_2: req.body.addressLine2 || "",
+                postcode: req.body.postcode || "00000",
+                county: req.body.county || req.body.state || "Online",
+                country: req.body.country || "Online",
+                
+                // Order details
                 products: products,
                 status: "Paid",
                 paypalPaymentID: req.params.orderID,
+                paypalPayerID: req.body.paypalPayerID,
                 creator_id: req.body.userID || "guest"
             };
 

@@ -8,7 +8,6 @@ let ordersSchema = new mongoose.Schema(
         email: {type: String, required:true},
         phone: {type: String, required:true},
         total_gross: {type: Number, required:true},
-        vat: {type: Number, required:true},
         delivery_cost: {type: Number, required:true},
         total_net: {type: Number, required:true},
         address_line_1: {type: String, required:true},
@@ -19,6 +18,7 @@ let ordersSchema = new mongoose.Schema(
         products: [productsSchema],
         status: {type: String, default: "Pending", required:true},
         paypalPaymentID: {type: String},
+        paypalPayerID: {type: String},
         creator_id: {type: String, required:true}
     },
     {
