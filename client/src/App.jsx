@@ -62,7 +62,7 @@ function App() {
                     <div className="desktop-links">
                         <Link to="/" className="nav-link">Home</Link>
                         <Link to="/products" className="nav-link">Products</Link>
-                        <Link to="/orders" className="nav-link">Orders</Link>
+
 
                         {userLevel === ACCESS_LEVEL_ADMIN && (
                             <Link to="/admin" className="nav-link">Admin</Link>
