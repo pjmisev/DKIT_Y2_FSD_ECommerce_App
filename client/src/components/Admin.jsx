@@ -1,10 +1,29 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ProductCard } from './ProductCard';
 
 export const Admin = props => {
     const [activeTab, setActiveTab] = useState('products');
     const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [productSearchTerm, setProductSearchTerm] = useState('');
+    const [productSortBy, setProductSortBy] = useState('model');
+    const [productSortOrder, setProductSortOrder] = useState('asc');
+    const [productCategoryFilter, setProductCategoryFilter] = useState('all');
+    const [productStatusFilter, setProductStatusFilter] = useState('all');
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [userSearchTerm, setUserSearchTerm] = useState('');
+    const [userSortBy, setUserSortBy] = useState('name');
+    const [userSortOrder, setUserSortOrder] = useState('asc');
+    const [userAccessLevelFilter, setUserAccessLevelFilter] = useState('all');
+    const [userStatusFilter, setUserStatusFilter] = useState('all');
+    const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [orderSearchTerm, setOrderSearchTerm] = useState('');
+    const [orderSortBy, setOrderSortBy] = useState('date');
+    const [orderSortOrder, setOrderSortOrder] = useState('desc');
+    const [orderStatusFilter, setOrderStatusFilter] = useState('all');
     const [selectedId, setSelectedId] = useState('');
     const [singleProduct, setSingleProduct] = useState(null);
     const [modalItem, setModalItem] = useState(null);
@@ -59,6 +78,17 @@ export const Admin = props => {
             setUsers(data);
         } catch (err) {
             console.error('Error fetching users:', err);
+        }
+    };
+
+    const fetchOrders = async () => {
+        try {
+            const { data } = await axios.get(`${API_URL}/orders`, {
+                headers: { authorization: localStorage.token }
+            });
+            setOrders(data);
+        } catch (err) {
+            console.error('Error fetching orders:', err);
         }
     };
 
@@ -297,6 +327,201 @@ export const Admin = props => {
         });
     };
 
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            const { data } = await axios.put(`${API_URL}/orders/${orderId}`, 
+                { status: newStatus },
+                {
+                    headers: { authorization: localStorage.token }
+                }
+            );
+            console.log('Updated order status:', data);
+            fetchOrders();
+        } catch (err) {
+            console.error('Error updating order status:', err);
+        }
+    };
+
+    const filterAndSortOrders = () => {
+        let filtered = [...orders];
+
+        // Filter by search term
+        if (orderSearchTerm) {
+            filtered = filtered.filter(order => 
+                order._id.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+                order.fname.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+                order.lname.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+                order.email.toLowerCase().includes(orderSearchTerm.toLowerCase())
+            );
+        }
+
+        // Filter by status
+        if (orderStatusFilter !== 'all') {
+            filtered = filtered.filter(order => order.status === orderStatusFilter);
+        }
+
+        // Sort orders
+        filtered.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (orderSortBy) {
+                case 'date':
+                    aValue = new Date(a.createdAt || 0);
+                    bValue = new Date(b.createdAt || 0);
+                    break;
+                case 'total':
+                    aValue = a.total_gross || 0;
+                    bValue = b.total_gross || 0;
+                    break;
+                case 'status':
+                    aValue = a.status || '';
+                    bValue = b.status || '';
+                    break;
+                case 'customer':
+                    aValue = `${a.fname} ${a.lname}`.toLowerCase();
+                    bValue = `${b.fname} ${b.lname}`.toLowerCase();
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (orderSortOrder === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        setFilteredOrders(filtered);
+    };
+
+    const filterAndSortProducts = () => {
+        let filtered = [...products];
+
+        // Filter by search term
+        if (productSearchTerm) {
+            filtered = filtered.filter(product => 
+                product._id.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+                product.brand.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+                product.model.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+                product.category.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+                product.description.toLowerCase().includes(productSearchTerm.toLowerCase())
+            );
+        }
+
+        // Filter by category
+        if (productCategoryFilter !== 'all') {
+            filtered = filtered.filter(product => product.category === productCategoryFilter);
+        }
+
+        // Filter by status
+        if (productStatusFilter !== 'all') {
+            filtered = filtered.filter(product => 
+                productStatusFilter === 'active' ? product.status : !product.status
+            );
+        }
+
+        // Sort products
+        filtered.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (productSortBy) {
+                case 'model':
+                    aValue = (a.model || '').toLowerCase();
+                    bValue = (b.model || '').toLowerCase();
+                    break;
+                case 'brand':
+                    aValue = (a.brand || '').toLowerCase();
+                    bValue = (b.brand || '').toLowerCase();
+                    break;
+                case 'category':
+                    aValue = (a.category || '').toLowerCase();
+                    bValue = (b.category || '').toLowerCase();
+                    break;
+                case 'price':
+                    aValue = a.price || 0;
+                    bValue = b.price || 0;
+                    break;
+                case 'stock':
+                    aValue = a.stock_level || 0;
+                    bValue = b.stock_level || 0;
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (productSortOrder === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        setFilteredProducts(filtered);
+    };
+
+    const filterAndSortUsers = () => {
+        let filtered = [...users];
+
+        // Filter by search term
+        if (userSearchTerm) {
+            filtered = filtered.filter(user => 
+                user._id.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                user.fname.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                user.lname.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(userSearchTerm.toLowerCase())
+            );
+        }
+
+        // Filter by access level
+        if (userAccessLevelFilter !== 'all') {
+            filtered = filtered.filter(user => 
+                userAccessLevelFilter === 'admin' ? user.accessLevel === 2 : user.accessLevel === 1
+            );
+        }
+
+        // Filter by status
+        if (userStatusFilter !== 'all') {
+            filtered = filtered.filter(user => 
+                userStatusFilter === 'active' ? user.status : !user.status
+            );
+        }
+
+        // Sort users
+        filtered.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (userSortBy) {
+                case 'name':
+                    aValue = `${a.fname} ${a.lname}`.toLowerCase();
+                    bValue = `${b.fname} ${b.lname}`.toLowerCase();
+                    break;
+                case 'email':
+                    aValue = (a.email || '').toLowerCase();
+                    bValue = (b.email || '').toLowerCase();
+                    break;
+                case 'accessLevel':
+                    aValue = a.accessLevel || 1;
+                    bValue = b.accessLevel || 1;
+                    break;
+                case 'date':
+                    aValue = new Date(a.date_created || 0);
+                    bValue = new Date(b.date_created || 0);
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (userSortOrder === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        setFilteredUsers(filtered);
+    };
+
     const loadUserToForm = (user) => {
         setSelectedId(user._id);
         setUserFormData({
@@ -332,8 +557,22 @@ export const Admin = props => {
             fetchProducts();
         } else if (activeTab === 'users') {
             fetchUsers();
+        } else if (activeTab === 'orders') {
+            fetchOrders();
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        filterAndSortOrders();
+    }, [orders, orderSearchTerm, orderSortBy, orderSortOrder, orderStatusFilter]);
+
+    useEffect(() => {
+        filterAndSortProducts();
+    }, [products, productSearchTerm, productSortBy, productSortOrder, productCategoryFilter, productStatusFilter]);
+
+    useEffect(() => {
+        filterAndSortUsers();
+    }, [users, userSearchTerm, userSortBy, userSortOrder, userAccessLevelFilter, userStatusFilter]);
 
     return (
         <div className="admin-container">
@@ -352,22 +591,77 @@ export const Admin = props => {
                 >
                     Users
                 </button>
+                <button 
+                    className={`tab-button ${activeTab === 'orders' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('orders')}
+                >
+                    Orders
+                </button>
             </div>
 
             {activeTab === 'products' && (
                 <>
                     <section className="section-card">
                         <h2 className="section-title">Products</h2>
-                        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                            <button onClick={fetchProducts} className="refresh-button">
-                                Refresh Products
-                            </button>
-                            <button onClick={openCreateModal} className="primary-button">
-                                Create New Product
-                            </button>
+                        <div className="orders-controls">
+                            <div className="search-filter-row">
+                                <input
+                                    type="text"
+                                    placeholder="Search products..."
+                                    value={productSearchTerm}
+                                    onChange={(e) => setProductSearchTerm(e.target.value)}
+                                    className="search-input"
+                                />
+                                <select
+                                    value={productCategoryFilter}
+                                    onChange={(e) => setProductCategoryFilter(e.target.value)}
+                                    className="form-select"
+                                >
+                                    <option value="all">All Categories</option>
+                                    <option value="TV">TV</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Phone">Phone</option>
+                                    <option value="Tablet">Tablet</option>
+                                    <option value="Wearable">Wearable</option>
+                                </select>
+                                <select
+                                    value={productStatusFilter}
+                                    onChange={(e) => setProductStatusFilter(e.target.value)}
+                                    className="form-select"
+                                >
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div className="sort-controls">
+                                <select
+                                    value={productSortBy}
+                                    onChange={(e) => setProductSortBy(e.target.value)}
+                                    className="form-select"
+                                >
+                                    <option value="model">Sort by Model</option>
+                                    <option value="brand">Sort by Brand</option>
+                                    <option value="category">Sort by Category</option>
+                                    <option value="price">Sort by Price</option>
+                                    <option value="stock">Sort by Stock</option>
+                                </select>
+                                <button
+                                    onClick={() => setProductSortOrder(productSortOrder === 'asc' ? 'desc' : 'asc')}
+                                    className="sort-order-btn"
+                                >
+                                    {productSortOrder === 'asc' ? '↑' : '↓'}
+                                </button>
+                                <button onClick={fetchProducts} className="refresh-button">
+                                    Refresh Products
+                                </button>
+                                <button onClick={openCreateModal} className="primary-button">
+                                    Create New Product
+                                </button>
+                            </div>
                         </div>
 
-                        {products?.length === 0 ? (
+                        {filteredProducts?.length === 0 ? (
                             <p>No products found</p>
                         ) : (
                             <>
@@ -385,7 +679,7 @@ export const Admin = props => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {products?.map((product) => (
+                                    {filteredProducts?.map((product) => (
                                         <tr key={product._id}>
                                             <td>{product._id}</td>
                                             <td>{product.category}</td>
@@ -423,7 +717,7 @@ export const Admin = props => {
                                 </table>
 
                                 <div className="card-grid">
-                                    {products?.map((product) => (
+                                    {filteredProducts?.map((product) => (
                                         <div key={product._id} className="data-card">
                                             <div className="card-title">{product.brand} {product.model}</div>
                                             <div className="card-field">
@@ -473,16 +767,61 @@ export const Admin = props => {
             {activeTab === 'users' && (
                 <section className="section-card">
                     <h2 className="section-title">Users</h2>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                        <button onClick={fetchUsers} className="refresh-button">
-                            Refresh Users
-                        </button>
-                        <button onClick={openCreateUserModal} className="primary-button">
-                            Create New User
-                        </button>
+                    <div className="orders-controls">
+                        <div className="search-filter-row">
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                value={userSearchTerm}
+                                onChange={(e) => setUserSearchTerm(e.target.value)}
+                                className="search-input"
+                            />
+                            <select
+                                value={userAccessLevelFilter}
+                                onChange={(e) => setUserAccessLevelFilter(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="all">All Access Levels</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                            <select
+                                value={userStatusFilter}
+                                onChange={(e) => setUserStatusFilter(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div className="sort-controls">
+                            <select
+                                value={userSortBy}
+                                onChange={(e) => setUserSortBy(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="name">Sort by Name</option>
+                                <option value="email">Sort by Email</option>
+                                <option value="accessLevel">Sort by Access Level</option>
+                                <option value="date">Sort by Date</option>
+                            </select>
+                            <button
+                                onClick={() => setUserSortOrder(userSortOrder === 'asc' ? 'desc' : 'asc')}
+                                className="sort-order-btn"
+                            >
+                                {userSortOrder === 'asc' ? '↑' : '↓'}
+                            </button>
+                            <button onClick={fetchUsers} className="refresh-button">
+                                Refresh Users
+                            </button>
+                            <button onClick={openCreateUserModal} className="primary-button">
+                                Create New User
+                            </button>
+                        </div>
                     </div>
 
-                    {users?.length === 0 ? (
+                    {filteredUsers?.length === 0 ? (
                         <p>No users found</p>
                     ) : (
                         <>
@@ -500,7 +839,7 @@ export const Admin = props => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {users?.map((user) => (
+                                {filteredUsers?.map((user) => (
                                     <tr key={user._id}>
                                         <td>{user._id}</td>
                                         <td>{user.fname}</td>
@@ -538,7 +877,7 @@ export const Admin = props => {
                             </table>
 
                             <div className="card-grid">
-                                {users?.map((user) => (
+                                {filteredUsers?.map((user) => (
                                     <div key={user._id} className="data-card">
                                         <div className="card-title">{user.fname} {user.lname}</div>
                                         <div className="card-field">
@@ -584,12 +923,166 @@ export const Admin = props => {
                 </section>
             )}
 
+            {activeTab === 'orders' && (
+                <section className="section-card">
+                    <h2 className="section-title">Orders</h2>
+                    <div className="orders-controls">
+                        <div className="search-filter-row">
+                            <input
+                                type="text"
+                                placeholder="Search orders..."
+                                value={orderSearchTerm}
+                                onChange={(e) => setOrderSearchTerm(e.target.value)}
+                                className="search-input"
+                            />
+                            <select
+                                value={orderStatusFilter}
+                                onChange={(e) => setOrderStatusFilter(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div className="sort-controls">
+                            <select
+                                value={orderSortBy}
+                                onChange={(e) => setOrderSortBy(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="date">Sort by Date</option>
+                                <option value="total">Sort by Total</option>
+                                <option value="status">Sort by Status</option>
+                                <option value="customer">Sort by Customer</option>
+                            </select>
+                            <button
+                                onClick={() => setOrderSortOrder(orderSortOrder === 'asc' ? 'desc' : 'asc')}
+                                className="sort-order-btn"
+                            >
+                                {orderSortOrder === 'asc' ? '↑' : '↓'}
+                            </button>
+                            <button onClick={fetchOrders} className="refresh-button">
+                                Refresh Orders
+                            </button>
+                        </div>
+                    </div>
+
+                    {filteredOrders?.length === 0 ? (
+                        <p>No orders found</p>
+                    ) : (
+                        <>
+                            <table className="data-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {filteredOrders?.map((order) => (
+                                    <tr key={order._id}>
+                                        <td>{order._id}</td>
+                                        <td>{order.fname} {order.lname}</td>
+                                        <td>{order.email}</td>
+                                        <td>${order.total_gross}</td>
+                                        <td>
+                                            <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                                        <td>
+                                            <button
+                                                onClick={() => openModal(order, 'order')}
+                                                className="action-button"
+                                            >
+                                                View
+                                            </button>
+                                            <select
+                                                value={order.status}
+                                                onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                                className="form-select"
+                                            >
+                                                <option value="Pending">Pending</option>
+                                                <option value="Paid">Paid</option>
+                                                <option value="Processing">Processing</option>
+                                                <option value="Shipped">Shipped</option>
+                                                <option value="Delivered">Delivered</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+
+                            <div className="card-grid">
+                                {filteredOrders?.map((order) => (
+                                    <div key={order._id} className="data-card">
+                                        <div className="card-title">Order #{order._id.slice(-8)}</div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Customer:</span>
+                                            <span className="card-field-value">{order.fname} {order.lname}</span>
+                                        </div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Email:</span>
+                                            <span className="card-field-value">{order.email}</span>
+                                        </div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Total:</span>
+                                            <span className="card-field-value">${order.total_gross}</span>
+                                        </div>
+                                        <div className="card-field">
+                                            <span className="card-field-label">Status:</span>
+                                            <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                                {order.status}
+                                            </span>
+                                        </div>
+                                        <div className="card-actions">
+                                            <button
+                                                onClick={() => openModal(order, 'order')}
+                                                className="action-button"
+                                            >
+                                                View Details
+                                            </button>
+                                            <select
+                                                value={order.status}
+                                                onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                                className="form-select"
+                                            >
+                                                <option value="Pending">Pending</option>
+                                                <option value="Paid">Paid</option>
+                                                <option value="Processing">Processing</option>
+                                                <option value="Shipped">Shipped</option>
+                                                <option value="Delivered">Delivered</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </section>
+            )}
+
             {modalItem && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2 className="modal-title">
-                                {modalType === 'product' ? 'Product Details' : 'User Details'}
+                                {modalType === 'product' ? 'Product Details' : 
+                                 modalType === 'user' ? 'User Details' : 'Order Details'}
                             </h2>
                             <button className="modal-close" onClick={closeModal}>
                                 ×
@@ -647,7 +1140,7 @@ export const Admin = props => {
                                         <span className="modal-field-value">{modalItem.stock_level}</span>
                                     </div>
                                 </>
-                            ) : (
+                            ) : modalType === 'user' ? (
                                 <>
                                     <div className="modal-field">
                                         <span className="modal-field-label">ID:</span>
@@ -678,7 +1171,64 @@ export const Admin = props => {
                                         <span className="modal-field-value">{new Date(modalItem.date_created).toLocaleString()}</span>
                                     </div>
                                 </>
-                            )}
+                            ) : modalType === 'order' ? (
+                                <>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Order ID:</span>
+                                        <span className="modal-field-value">{modalItem._id}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Customer Name:</span>
+                                        <span className="modal-field-value">{modalItem.fname} {modalItem.lname}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Email:</span>
+                                        <span className="modal-field-value">{modalItem.email}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Status:</span>
+                                        <span className="modal-field-value">{modalItem.status}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Total Net:</span>
+                                        <span className="modal-field-value">${modalItem.total_net}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Delivery Cost:</span>
+                                        <span className="modal-field-value">${modalItem.delivery_cost}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Total Gross:</span>
+                                        <span className="modal-field-value">${modalItem.total_gross}</span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Address:</span>
+                                        <span className="modal-field-value">
+                                            {modalItem.address_line_1}, {modalItem.address_line_2 && modalItem.address_line_2 + ', '}
+                                            {modalItem.postcode}, {modalItem.county}, {modalItem.country}
+                                        </span>
+                                    </div>
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">Products:</span>
+                                        <div className="order-products-grid">
+                                            {modalItem.products?.map((product, index) => (
+                                                <div key={index} className="order-product-card-wrapper">
+                                                    <ProductCard product={product} addToCart={() => {}} />
+                                                    <div className="order-product-price-overlay">
+                                                        ${product.price}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {modalItem.paypalPaymentID && (
+                                        <div className="modal-field">
+                                            <span className="modal-field-label">PayPal Payment ID:</span>
+                                            <span className="modal-field-value">{modalItem.paypalPaymentID}</span>
+                                        </div>
+                                    )}
+                                </>
+                            ) : null}
                         </div>
                     </div>
                 </div>

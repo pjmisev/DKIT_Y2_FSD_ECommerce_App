@@ -1,12 +1,20 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { ProductCard } from './ProductCard';
 
 export const User = () => {
     const [user, setUser] = useState(null);
+    const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [orderSearchTerm, setOrderSearchTerm] = useState('');
+    const [orderSortBy, setOrderSortBy] = useState('date');
+    const [orderSortOrder, setOrderSortOrder] = useState('desc');
+    const [orderStatusFilter, setOrderStatusFilter] = useState('all');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     const API_URL = "http://localhost:4000/api";
 
@@ -29,13 +37,32 @@ export const User = () => {
             }
         };
 
+        const fetchUserOrders = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/user/orders`, {
+                    headers: {
+                        authorization: localStorage.token
+                    }
+                });
+
+                setOrders(response.data);
+            } catch (err) {
+                console.error('Error fetching orders:', err);
+            }
+        };
+
         if (localStorage.token) {
             fetchUserData();
+            fetchUserOrders();
         } else {
             setError("No token found, please log in.");
             setIsLoading(false);
         }
     }, []);
+
+    useEffect(() => {
+        filterAndSortOrders();
+    }, [orders, orderSearchTerm, orderSortBy, orderSortOrder, orderStatusFilter]);
 
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
@@ -76,6 +103,61 @@ export const User = () => {
         } finally {
             setUploading(false);
         }
+    };
+
+    const openOrderModal = (order) => {
+        setSelectedOrder(order);
+    };
+
+    const closeModal = () => {
+        setSelectedOrder(null);
+    };
+
+    const filterAndSortOrders = () => {
+        let filtered = [...orders];
+
+        // Filter by search term
+        if (orderSearchTerm) {
+            filtered = filtered.filter(order => 
+                order._id.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+                order.status.toLowerCase().includes(orderSearchTerm.toLowerCase())
+            );
+        }
+
+        // Filter by status
+        if (orderStatusFilter !== 'all') {
+            filtered = filtered.filter(order => order.status === orderStatusFilter);
+        }
+
+        // Sort orders
+        filtered.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (orderSortBy) {
+                case 'date':
+                    aValue = new Date(a.createdAt || 0);
+                    bValue = new Date(b.createdAt || 0);
+                    break;
+                case 'total':
+                    aValue = a.total_gross || 0;
+                    bValue = b.total_gross || 0;
+                    break;
+                case 'status':
+                    aValue = a.status || '';
+                    bValue = b.status || '';
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (orderSortOrder === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        setFilteredOrders(filtered);
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -124,6 +206,149 @@ export const User = () => {
             {uploading && (
                 <div className="uploading-image">
                     Uploading image...
+                </div>
+            )}
+
+            {/* Orders Section */}
+            <div className="user-orders-section">
+                <h2>Your Orders</h2>
+                <div className="orders-controls">
+                    <div className="search-filter-row">
+                        <input
+                            type="text"
+                            placeholder="Search your orders..."
+                            value={orderSearchTerm}
+                            onChange={(e) => setOrderSearchTerm(e.target.value)}
+                            className="search-input"
+                        />
+                        <select
+                            value={orderStatusFilter}
+                            onChange={(e) => setOrderStatusFilter(e.target.value)}
+                            className="form-select"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div className="sort-controls">
+                        <select
+                            value={orderSortBy}
+                            onChange={(e) => setOrderSortBy(e.target.value)}
+                            className="form-select"
+                        >
+                            <option value="date">Sort by Date</option>
+                            <option value="total">Sort by Total</option>
+                            <option value="status">Sort by Status</option>
+                        </select>
+                        <button
+                            onClick={() => setOrderSortOrder(orderSortOrder === 'asc' ? 'desc' : 'asc')}
+                            className="sort-order-btn"
+                        >
+                            {orderSortOrder === 'asc' ? '↑' : '↓'}
+                        </button>
+                    </div>
+                </div>
+                {filteredOrders?.length === 0 ? (
+                    <p>{orders?.length === 0 ? "You haven't placed any orders yet." : "No orders found matching your criteria."}</p>
+                ) : (
+                    <div className="orders-grid">
+                        {filteredOrders?.map((order) => (
+                            <div key={order._id} className="order-card">
+                                <div className="order-header">
+                                    <h3>Order #{order._id.slice(-8)}</h3>
+                                    <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                        {order.status}
+                                    </span>
+                                </div>
+                                <div className="order-info">
+                                    <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                                    <p><strong>Total:</strong> ${order.total_gross}</p>
+                                    <p><strong>Items:</strong> {order.products?.length || 0}</p>
+                                </div>
+                                <button 
+                                    onClick={() => openOrderModal(order)}
+                                    className="view-order-btn"
+                                >
+                                    View Details
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Order Details Modal */}
+            {selectedOrder && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">Order Details</h2>
+                            <button className="modal-close" onClick={closeModal}>
+                                ×
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="modal-field">
+                                <span className="modal-field-label">Order ID:</span>
+                                <span className="modal-field-value">{selectedOrder._id}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Customer Name:</span>
+                                <span className="modal-field-value">{selectedOrder.fname} {selectedOrder.lname}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Email:</span>
+                                <span className="modal-field-value">{selectedOrder.email}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Status:</span>
+                                <span className="modal-field-value">{selectedOrder.status}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Total Net:</span>
+                                <span className="modal-field-value">${selectedOrder.total_net}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Delivery Cost:</span>
+                                <span className="modal-field-value">${selectedOrder.delivery_cost}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Total Gross:</span>
+                                <span className="modal-field-value">${selectedOrder.total_gross}</span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Address:</span>
+                                <span className="modal-field-value">
+                                            {selectedOrder.address_line_1}, {selectedOrder.address_line_2 && selectedOrder.address_line_2 + ', '}
+                                    {selectedOrder.postcode}, {selectedOrder.county}, {selectedOrder.country}
+                                        </span>
+                            </div>
+                            <div className="modal-field">
+                                <span className="modal-field-label">Products:</span>
+                                <div className="order-products-grid">
+                                    {selectedOrder.products?.map((product, index) => (
+                                        <div key={index} className="order-product-card-wrapper">
+                                            <ProductCard product={product} addToCart={() => {}} />
+                                            <div className="order-product-price-overlay">
+                                                ${product.price}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            {selectedOrder.paypalPaymentID && (
+                                <div className="modal-field">
+                                    <span className="modal-field-label">PayPal Payment ID:</span>
+                                    <span className="modal-field-value">{selectedOrder.paypalPaymentID}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

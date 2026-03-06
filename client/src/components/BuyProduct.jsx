@@ -31,10 +31,18 @@ export const BuyProduct = props =>
 
         // Fetch detailed PayPal order information
         return actions.order.get(data.orderID).then(orderDetails => {
+            console.log("=== FULL PAYPAL ORDER DETAILS ===");
+            console.log(JSON.stringify(orderDetails, null, 2));
+            console.log("===================================");
+            
             const payer = orderDetails.payer;
             const purchaseUnit = orderDetails.purchase_units[0];
             const shipping = purchaseUnit.shipping;
             const billing = purchaseUnit.billing_address || shipping?.address;
+
+            console.log("=== PAYER DETAILS ===");
+            console.log("Payer:", JSON.stringify(payer, null, 2));
+            console.log("=======================");
 
             // Extract comprehensive customer information from PayPal
             const customerData = {
@@ -45,7 +53,6 @@ export const BuyProduct = props =>
                 
                 // Contact information
                 email: payer.email_address || "",
-                phone: payer.phone?.phone_number?.national_number || payer.phone?.phone_number?.full_number || "",
                 
                 // Address information (prefer shipping, fallback to billing)
                 addressLine1: shipping?.address?.address_line_1 || billing?.address_line_1 || "",
@@ -60,13 +67,16 @@ export const BuyProduct = props =>
                 paymentID: data.orderID
             };
 
+            console.log("=== EXTRACTED CUSTOMER DATA ===");
+            console.log(JSON.stringify(customerData, null, 2));
+            console.log("================================");
+
             axios.post(`${SERVER_HOST}/orders/paypal/${data.orderID}/cart/${props.price}`, {
                 // Customer information from PayPal
                 customerName: customerData.fullName,
                 customerFirstName: customerData.firstName,
                 customerLastName: customerData.lastName,
                 customerEmail: customerData.email,
-                customerPhone: customerData.phone,
                 
                 // Address information
                 addressLine1: customerData.addressLine1,

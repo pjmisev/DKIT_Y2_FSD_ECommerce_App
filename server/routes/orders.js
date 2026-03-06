@@ -27,12 +27,22 @@ const getOneOrder = (req, res, next) =>
         .catch(err => next(createError(500, `A server error has occurred.`)));
 }
 
+const getUserOrders = (req, res, next) =>
+{
+    const userId = req.decodedToken?.id || req.body.userID || "guest";
+    ordersModel.find({creator_id: userId})
+        .then(data =>
+        {
+            res.json(data);
+        })
+        .catch(err => next(createError(500, `A server error has occurred.`)));
+}
+
 const validateOrderData = (req, res, next) =>
 {
     if(validateString(req.body.fname) &&
         validateString(req.body.lname) &&
         validateString(req.body.email) &&
-        validateString(req.body.phone) &&
         validateString(req.body.address_line_1) &&
         validateString(req.body.address_line_2) &&
         validateString(req.body.postcode) &&
@@ -53,7 +63,6 @@ const createNewOrderDocument = (req, res, next) =>
         fname: req.body.fname,
         lname: req.body.lname,
         email: req.body.email,
-        phone: req.body.phone,
         total_gross: req.body.total_gross,
         delivery_cost: req.body.delivery_cost,
         total_net: req.body.total_net,
@@ -98,6 +107,11 @@ const updateOrderDocument = (req, res, next) =>
 }
 
 const createPayPalOrder = (req, res, next) => {
+    console.log("=== PAYPAL ORDER REQUEST RECEIVED ===");
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    console.log("Decoded token:", JSON.stringify(req.decodedToken, null, 2));
+    console.log("=====================================");
+    
     if (req.params.productID !== "cart") {
         return next(createError(400, "Only cart purchases are allowed"));
     }
@@ -113,12 +127,22 @@ const createPayPalOrder = (req, res, next) => {
         return next(createError(400, `Invalid price value: ${req.params.price}`));
     }
 
+    // Extract user ID from JWT token
+    const userId = req.decodedToken?.id || req.body.userID || "guest";
+    console.log("Extracted userId:", userId);
+
     productsModel.find({'_id': {$in: productIds}})
         .then(products => {
             // Extract customer information from PayPal data
             const firstName = req.body.customerFirstName || req.body.customerName?.split(' ')[0] || "PayPal";
             const lastName = req.body.customerLastName || req.body.customerName?.split(' ').slice(1).join(' ') || "Customer";
             
+            console.log("=== CUSTOMER INFO FROM REQUEST ===");
+            console.log("First name:", req.body.customerFirstName);
+            console.log("Last name:", req.body.customerLastName);
+            console.log("Email:", req.body.customerEmail);
+            console.log("================================");
+
             // Use pricing breakdown from request, or calculate as fallback
             let pricing;
             if (req.body.pricing && req.body.pricing.subtotal !== undefined) {
@@ -145,7 +169,6 @@ const createPayPalOrder = (req, res, next) => {
                 
                 // Customer contact information
                 email: req.body.customerEmail || "paypal@example.com",
-                phone: req.body.customerPhone || "0000000000",
                 
                 // Order pricing (use calculated breakdown)
                 total_gross: pricing.total,
@@ -164,8 +187,12 @@ const createPayPalOrder = (req, res, next) => {
                 status: "Paid",
                 paypalPaymentID: req.params.orderID,
                 paypalPayerID: req.body.paypalPayerID,
-                creator_id: req.body.userID || "guest"
+                creator_id: userId
             };
+
+            console.log("=== FINAL ORDER DATA ===");
+            console.log(JSON.stringify(orderData, null, 2));
+            console.log("========================");
 
             return ordersModel.create(orderData);
         })
@@ -199,8 +226,9 @@ const decrementProductStock = (req, res, next) => {
 
 router.get(`/api/orders`, verifyUsersJWTPassword, getAllOrders)
 router.get(`/api/orders/:id`, verifyUsersJWTPassword, getOneOrder)
+router.get(`/api/user/orders`, verifyUsersJWTPassword, getUserOrders)
 router.post(`/api/orders`, verifyUsersJWTPassword, validateOrderData, createNewOrderDocument)
 router.put(`/api/orders/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateOrderUpdateData, updateOrderDocument)
-router.post('/orders/paypal/:orderID/:productID/:price', decrementProductStock, createPayPalOrder)
+router.post('/orders/paypal/:orderID/:productID/:price', verifyUsersJWTPassword, decrementProductStock, createPayPalOrder)
 
 module.exports = router

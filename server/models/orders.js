@@ -6,7 +6,6 @@ let ordersSchema = new mongoose.Schema(
         fname: {type: String, required:true},
         lname: {type: String, required:true},
         email: {type: String, required:true},
-        phone: {type: String, required:true},
         total_gross: {type: Number, required:true},
         delivery_cost: {type: Number, required:true},
         total_net: {type: Number, required:true},
@@ -19,10 +18,12 @@ let ordersSchema = new mongoose.Schema(
         status: {type: String, default: "Pending", required:true},
         paypalPaymentID: {type: String},
         paypalPayerID: {type: String},
-        creator_id: {type: String, required:true}
+        creator_id: {type: String, required:true},
+        created_at: {type: Date, default: Date.now, required:true}
     },
     {
-        collection: `orders`
+        collection: `orders`,
+        timestamps: true
     })
 
 module.exports = mongoose.model(`orders`, ordersSchema)
