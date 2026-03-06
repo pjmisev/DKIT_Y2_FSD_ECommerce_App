@@ -47,9 +47,9 @@ export const User = () => {
             return;
         }
 
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            setUploadError("File size must be less than 5MB");
+        // Validate file size (max 3MB)
+        if (file.size > 3 * 1024 * 1024) {
+            setUploadError("File size must be less than 3MB");
             return;
         }
 
@@ -87,7 +87,7 @@ export const User = () => {
                 <div className="profile-image">
                     {user?.image ? (
                         <img className="pf-img"
-                            src={`data:image/jpeg;base64,${user.image}`}
+                            src={`data:image/*;base64,${user.image}`}
                             alt="Profile"
                         />
                     ) : (
