@@ -102,7 +102,6 @@ function App() {
                         <Link to="/" onClick={closeMenu}>Home</Link>
                         <Link to="/products" onClick={closeMenu}>Products</Link>
                         <Link to="/cart" onClick={closeMenu}>Cart</Link>
-                        <Link to="/orders" className="nav-link">Orders</Link>
 
                         {userLevel === ACCESS_LEVEL_ADMIN && (
                             <Link to="/admin" onClick={closeMenu}>Admin</Link>
@@ -133,7 +132,6 @@ function App() {
                     <Route path="/login" element={<Login onLoginChange={handleLoginState} />} />
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
-                    <Route path="/orders" element={<Orders />} />
                     <Route path="/products/:id" element={<DisplayProduct />} />
                     <Route path="/PayPalMessage/:type/:orderID" element={<PayPalMessage />} />
                     <Route path="/user" element={<User />} />
