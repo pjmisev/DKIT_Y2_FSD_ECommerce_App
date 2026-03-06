@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import { BuyProduct } from "./BuyProduct.jsx";
 
 
 
@@ -71,7 +72,7 @@ export const Cart = props => {
                                 }}
                                 className="action-button delete-button"
                             >
-                                Delete
+                                Remove from Cart
                             </button>
                         </td>
                     </tr>
@@ -84,7 +85,12 @@ export const Cart = props => {
                     <td style={{ fontWeight: 'bold' }}>
                         €{cartProducts.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
                     </td>
-                    <td></td>
+                    <td>
+                        <BuyProduct
+                        product={cartProducts}
+                        price={cartProducts.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
+                        />
+                    </td>
                 </tr>
                 </tfoot>
             </table>
