@@ -19,7 +19,6 @@ import { PayPalMessage } from "./components/PayPalMessage.jsx";
 
 import {ACCESS_LEVEL_ADMIN, ACCESS_LEVEL_GUEST} from './config/global_constants';
 import { Admin } from "./components/Admin.jsx";
-import {Orders} from "./components/Orders.jsx";
 
 if (typeof localStorage.accessLevel === "undefined") {
     localStorage.name = "GUEST"
