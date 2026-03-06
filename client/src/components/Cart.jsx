@@ -87,7 +87,7 @@ export const Cart = props => {
                     </td>
                     <td>
                         <BuyProduct
-                        product={cartProducts}
+                        product={{products: cartProducts}}
                         price={cartProducts.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
                         />
                     </td>

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export const ProductCard = ({ product, addToCart }) => {
+    const isOutOfStock = product.stock_level <= 0;
+
     return (
         <div className="product-card">
             {product.image ? (
@@ -18,12 +20,18 @@ export const ProductCard = ({ product, addToCart }) => {
                 <p className="product-model">{product.model}</p>
                 <div className="product-price">€{product.price}</div>
                 <div className="card-actions">
-                    <button className="action-button" onClick={() => addToCart(product._id)}>
-                        Add to Cart
-                    </button>
-                    <Link to={`/products/${product._id}`} className="action-button">
-                        View Details
-                    </Link>
+                    {isOutOfStock ? (
+                        <span className="out-of-stock">Out of Stock</span>
+                    ) : (
+                        <>
+                            <button className="action-button" onClick={() => addToCart(product._id)}>
+                                Add to Cart
+                            </button>
+                            <Link to={`/products/${product._id}`} className="action-button">
+                                View Details
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

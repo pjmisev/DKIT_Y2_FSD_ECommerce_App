@@ -132,7 +132,7 @@ function App() {
                     <Route path="/register" element={<Register onLoginChange={handleLoginState} />} />
                     <Route path="/logout" element={<Logout onLoginChange={handleLoginState} />} />
                     <Route path="/products/:id" element={<DisplayProduct />} />
-                    <Route path="/PayPalMessage/:type/:orderID" element={<PayPalMessage />} />
+                    <Route path="/PayPalMessage/:messageType/:payPalOrderID" element={<PayPalMessage />} />
                     <Route path="/user" element={<User />} />
                     <Route path="*" element={<h2>404 Page Not Found</h2>} />
                     <Route path="/admin" element={<Admin />} />

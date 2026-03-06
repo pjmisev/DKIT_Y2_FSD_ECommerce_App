@@ -19,17 +19,29 @@ export const BuyProduct = props =>
     }
 
 
-    const onApprove = paymentData =>
-    {
-        axios.post(`${SERVER_HOST}/sales/${paymentData.orderID}/${props.product._id}/${props.product.price}`, {headers: {"authorization": localStorage.token, "Content-type": "multipart/form-data"}})
-            .then(res =>
-            {
+    const onApprove = paymentData => {
+        if (!props.product || !props.product.products) {
+            console.error("Cart products data is missing")
+            setPayPalMessageType("ERROR")
+            setRedirectToPayPalMessage(true)
+            return
+        }
+
+        const productIds = props.product.products.map(product => product._id);
+
+        axios.post(`${SERVER_HOST}/orders/paypal/${paymentData.orderID}/cart/${props.product.price}`, {
+            customerName: paymentData.payer?.name?.given_name || "PayPal Customer",
+            customerEmail: paymentData.payer?.email_address || "",
+            userID: localStorage.userID || null,
+            productIds: productIds
+        }, {headers: {"authorization": localStorage.token, "Content-type": "application/json"}})
+            .then(res => {
                 setPayPalMessageType("SUCCESS")
                 setPayPalOrderID(paymentData.orderID)
                 setRedirectToPayPalMessage(true)
             })
-            .catch(err =>
-            {
+            .catch(err => {
+                console.error("PayPal order creation error:", err)
                 setPayPalMessageType("ERROR")
                 setRedirectToPayPalMessage(true)
             })

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export const ProductTabletView = ({ product, addToCart }) => {
+    const isOutOfStock = product.stock_level <= 0;
+
     return (
         <tr key={product._id}>
             <td>
@@ -19,12 +21,18 @@ export const ProductTabletView = ({ product, addToCart }) => {
             </td>
             <td>€{product.price.toFixed(2)}</td>
             <td>
-                <button className="action-button" onClick={() => addToCart(product._id)}>
-                    Add
-                </button>
-                <Link to={`/products/${product._id}`} className="action-button">
-                    View
-                </Link>
+                {isOutOfStock ? (
+                    <span className="out-of-stock">Out of Stock</span>
+                ) : (
+                    <>
+                        <button className="action-button" onClick={() => addToCart(product._id)}>
+                            Add to Cart
+                        </button>
+                        <Link to={`/products/${product._id}`} className="action-button">
+                            View Details
+                        </Link>
+                    </>
+                )}
             </td>
         </tr>
     );
