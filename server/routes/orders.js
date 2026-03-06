@@ -108,22 +108,28 @@ const createPayPalOrder = (req, res, next) => {
         return next(createError(400, "No products in cart"));
     }
 
+    // Validate and parse price
+    const price = parseFloat(req.params.price);
+    if (isNaN(price) || price <= 0) {
+        return next(createError(400, `Invalid price value: ${req.params.price}`));
+    }
+
     productsModel.find({'_id': {$in: productIds}})
         .then(products => {
             const orderData = {
                 fname: req.body.customerName || "PayPal Customer",
-                lname: "",
-                email: req.body.customerEmail || "",
-                phone: "",
-                total_gross: parseFloat(req.params.price),
+                lname: req.body.customerName?.split(' ')[1] || "Customer", // Extract last name or use default
+                email: req.body.customerEmail || "paypal@example.com",
+                phone: "0000000000", // Default phone number
+                total_gross: price,
                 vat: 0,
                 delivery_cost: 0,
-                total_net: parseFloat(req.params.price),
-                address_line_1: "",
+                total_net: price,
+                address_line_1: "PayPal Purchase",
                 address_line_2: "",
-                postcode: "",
-                county: "",
-                country: "",
+                postcode: "00000", // Default postcode
+                county: "Online", // Default county
+                country: "Online", // Default country
                 products: products,
                 status: "Paid",
                 paypalPaymentID: req.params.orderID,

@@ -29,13 +29,15 @@ export const BuyProduct = props =>
 
         const productIds = props.product.products.map(product => product._id);
 
-        axios.post(`${SERVER_HOST}/orders/paypal/${paymentData.orderID}/cart/${props.product.price}`, {
+        axios.post(`${SERVER_HOST}/orders/paypal/${paymentData.orderID}/cart/${props.price}`, {
             customerName: paymentData.payer?.name?.given_name || "PayPal Customer",
             customerEmail: paymentData.payer?.email_address || "",
             userID: localStorage.userID || null,
             productIds: productIds
         }, {headers: {"authorization": localStorage.token, "Content-type": "application/json"}})
             .then(res => {
+                // Clear the cart after successful order
+                localStorage.removeItem('cart');
                 setPayPalMessageType("SUCCESS")
                 setPayPalOrderID(paymentData.orderID)
                 setRedirectToPayPalMessage(true)
