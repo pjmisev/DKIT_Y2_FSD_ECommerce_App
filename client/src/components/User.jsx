@@ -21,6 +21,7 @@ export const User = () => {
 
                 setUser(response.data);
                 setIsLoading(false);
+
             } catch (err) {
                 setError("Failed to load user profile");
                 setIsLoading(false);
@@ -64,9 +65,11 @@ export const User = () => {
                     'authorization': localStorage.token,
                     'Content-Type': 'multipart/form-data'
                 }
-            });
-
+        });
             setUser(response.data);
+            localStorage.setItem("userImage", response.data.image);
+            window.dispatchEvent(new Event("storage"));
+
         } catch (err) {
             setUploadError(err.response?.data?.message || "Failed to upload image");
             console.error('Upload error:', err);

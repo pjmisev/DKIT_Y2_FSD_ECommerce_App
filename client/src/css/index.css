@@ -1060,3 +1060,20 @@ button:focus-visible {
     object-fit: contain;
 }
 
+.app-user-img{
+    width: 6vh;      /* Adjust to your desired size */
+    height: 6vh;
+    border-radius: 50%;
+    overflow: hidden; /* Ensures image doesn't spill outside the circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+}
+
+.app-user-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+

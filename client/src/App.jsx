@@ -30,6 +30,7 @@ if (typeof localStorage.accessLevel === "undefined") {
 function App() {
     const [userLevel, setUserLevel] = useState(parseInt(localStorage.accessLevel));
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [profileImage, setProfileImage] = useState(localStorage.userImage || null);
 
     const toggleMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -41,7 +42,17 @@ function App() {
 
     const handleLoginState = () => {
         setUserLevel(parseInt(localStorage.accessLevel));
+        setProfileImage(localStorage.userImage || null);
     };
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setProfileImage(localStorage.userImage || null);
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
 
     return (
         <PayPalScriptProvider options={{ "client-id": SANDBOX_CLIENT_ID, currency: "EUR" }}>
@@ -65,8 +76,12 @@ function App() {
 
                     {userLevel > ACCESS_LEVEL_GUEST ? (
                         <>
-                            <Link to="/user" className="avatar-circle">
-                                U
+                            <Link to="/user" className="app-user-img">
+                                {profileImage ? (
+                                    <img src={`data:image/jpeg;base64,${profileImage}`} alt="Profile" />
+                                ) : (
+                                    "U" // Fallback icon
+                                )}
                             </Link>
                             <Link to="/logout" className="nav-link">Logout</Link>
                         </>
