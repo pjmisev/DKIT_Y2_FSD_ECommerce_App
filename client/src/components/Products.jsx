@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { ProductTableRow } from "./ProductTableRow.jsx";
+import { ProductTabletView } from "./ProductTabletView.jsx";
 import { ProductCard } from "./ProductCard.jsx";
 import { FilterMenu } from "./FilterMenu.jsx";
 
@@ -128,8 +129,8 @@ export const Products = props => {
                         <p>No products found</p>
                     ) : (
                         <>
-                            {/* TABLE VIEW */}
-                            <table className="data-table">
+                            {/* DESKTOP TABLE VIEW */}
+                            <table className="data-table desktop-table">
                                 <thead>
                                 <tr>
                                     <th>Image</th>
@@ -152,7 +153,28 @@ export const Products = props => {
                                 </tbody>
                             </table>
 
-                            {/* Card Grid View*/}
+                            {/* TABLET VIEW */}
+                            <table className="data-table tablet-table">
+                                <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {filteredProducts.map((product) => (
+                                    <ProductTabletView
+                                        key={product._id}
+                                        product={product}
+                                        addToCart={addToCart}
+                                    />
+                                ))}
+                                </tbody>
+                            </table>
+
+                            {/* MOBILE CARD VIEW */}
                             <div className="card-grid">
                                 {filteredProducts.map((product) => (
                                     <ProductCard

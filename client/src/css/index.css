@@ -1016,13 +1016,66 @@ button:focus-visible {
     border: 1px solid #ffcdd2;
 }
 
-.uploading-image{
-    color: #007bff;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #e3f2fd;
-    border-radius: 4px;
-    border: 1px solid #bbdefb
+/* Responsive Product Views */
+@media (max-width: 599px) {
+    /* Mobile phones (< 600px) - Show cards, hide all tables */
+    .desktop-table,
+    .tablet-table {
+        display: none;
+    }
+    
+    .card-grid {
+        display: grid; /* Show card grid */
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+    /* Tablets (600px - 767px) - Show tablet view, hide desktop and cards */
+    .desktop-table {
+        display: none; /* Hide desktop table */
+    }
+    
+    .tablet-table {
+        display: table; /* Show tablet table */
+    }
+    
+    .card-grid {
+        display: none; /* Hide card grid */
+    }
+}
+
+@media (min-width: 768px) {
+    /* Desktop (> 767px) - Show desktop table, hide tablet and cards */
+    .desktop-table {
+        display: table; /* Show desktop table */
+    }
+    
+    .tablet-table {
+        display: none; /* Hide tablet table */
+    }
+    
+    .card-grid {
+        display: none; /* Hide card grid */
+    }
+}
+
+.tablet-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tablet-brand {
+    font-weight: 600;
+    color: #646cff;
+    font-size: 0.9rem;
+}
+
+.tablet-model {
+    color: rgba(255, 255, 255, 0.87);
+    font-size: 0.8rem;
 }
 
 .product-details{
