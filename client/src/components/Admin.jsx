@@ -669,6 +669,7 @@ export const Admin = props => {
                                     <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Image</th>
                                         <th>Category</th>
                                         <th>Brand</th>
                                         <th>Model</th>
@@ -682,6 +683,12 @@ export const Admin = props => {
                                     {filteredProducts?.map((product) => (
                                         <tr key={product._id}>
                                             <td>{product._id}</td>
+                                            <td>
+                                                <img
+                                                src={product.image ? `data:image/png;base64,${product.image}` : '/placeholder.png'}
+                                                alt={product.model}
+                                                style={{ width: '80px', height: '80px', objectFit: 'cover' }} />
+                                            </td>
                                             <td>{product.category}</td>
                                             <td>{product.brand}</td>
                                             <td>{product.model}</td>

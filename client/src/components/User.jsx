@@ -319,7 +319,7 @@ export const User = () => {
                                 </div>
                                 <button 
                                     onClick={() => openOrderModal(order)}
-                                    className="view-order-btn"
+                                    className="action-button"
                                 >
                                     View Details
                                 </button>
