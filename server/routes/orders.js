@@ -222,6 +222,54 @@ const decrementProductStock = (req, res, next) => {
         .catch(err => next(err));
 };
 
+const processReturn = (req, res, next) => {
+    const orderId = req.params.id;
+    
+    ordersModel.findById(orderId)
+        .then(order => {
+            if (!order) {
+                return next(createError(404, "Order not found"));
+            }
+            
+            if (order.status === "Returned") {
+                return next(createError(400, "Order has already been returned"));
+            }
+            
+            if (order.status !== "Paid" && order.status !== "Delivered") {
+                return next(createError(400, "Order cannot be returned"));
+            }
+            
+            // Update product stock for each product in the order
+            const stockUpdates = order.products.map(product => 
+                productsModel.findByIdAndUpdate(
+                    product._id,
+                    {$inc: {stock_level: 1}}
+                )
+            );
+            
+            // Execute stock updates
+            return Promise.all(stockUpdates)
+                .then(() => {
+                    // Update order status to "Returned"
+                    return ordersModel.findByIdAndUpdate(
+                        orderId,
+                        {status: "Returned"},
+                        {returnDocument: 'after'}
+                    );
+                });
+        })
+        .then(updatedOrder => {
+            res.json({
+                success: true,
+                message: "Order processed for return successfully",
+                order: updatedOrder
+            });
+        })
+        .catch(err => {
+            next(createError(500, "A server error has occurred while processing return."));
+        });
+};
+
 // ROUTES
 
 router.get(`/api/orders`, verifyUsersJWTPassword, getAllOrders)
@@ -230,5 +278,6 @@ router.get(`/api/user/orders`, verifyUsersJWTPassword, getUserOrders)
 router.post(`/api/orders`, verifyUsersJWTPassword, validateOrderData, createNewOrderDocument)
 router.put(`/api/orders/:id`, verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateOrderUpdateData, updateOrderDocument)
 router.post('/orders/paypal/:orderID/:productID/:price', verifyUsersJWTPassword, decrementProductStock, createPayPalOrder)
+router.post(`/api/orders/:id/return`, verifyUsersJWTPassword, processReturn)
 
 module.exports = router

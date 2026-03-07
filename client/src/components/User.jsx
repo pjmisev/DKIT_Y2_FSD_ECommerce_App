@@ -15,6 +15,8 @@ export const User = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [returningOrder, setReturningOrder] = useState(false);
+    const [returnMessage, setReturnMessage] = useState("");
 
     const API_URL = "http://localhost:4000/api";
 
@@ -111,6 +113,38 @@ export const User = () => {
 
     const closeModal = () => {
         setSelectedOrder(null);
+        setReturnMessage("");
+    };
+
+    const handleReturnOrder = async (orderId) => {
+        setReturningOrder(true);
+        setReturnMessage("");
+        
+        try {
+            const response = await axios.post(`${API_URL}/orders/${orderId}/return`, {}, {
+                headers: {
+                    authorization: localStorage.token
+                }
+            });
+            
+            if (response.data.success) {
+                setReturnMessage("Order returned successfully! Stock has been restored.");
+                // Update the order in the local state
+                setOrders(orders.map(order => 
+                    order._id === orderId 
+                        ? {...order, status: "Returned"}
+                        : order
+                ));
+                // Update the selected order
+                setSelectedOrder({...selectedOrder, status: "Returned"});
+            } else {
+                setReturnMessage("Failed to process return. Please try again.");
+            }
+        } catch (err) {
+            setReturnMessage(err.response?.data?.message || "An error occurred while processing the return.");
+        } finally {
+            setReturningOrder(false);
+        }
     };
 
     const filterAndSortOrders = () => {
@@ -232,6 +266,7 @@ export const User = () => {
                             <option value="Processing">Processing</option>
                             <option value="Shipped">Shipped</option>
                             <option value="Delivered">Delivered</option>
+                            <option value="Returned">Returned</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
@@ -345,6 +380,23 @@ export const User = () => {
                                 <div className="modal-field">
                                     <span className="modal-field-label">PayPal Payment ID:</span>
                                     <span className="modal-field-value">{selectedOrder.paypalPaymentID}</span>
+                                </div>
+                            )}
+                            {returnMessage && (
+                                <div className={returnMessage.includes('successfully') ? '' : 'upload-error'} 
+                                     style={returnMessage.includes('successfully') ? {color: '#4caf50', padding: '10px', textAlign: 'center'} : {}}>
+                                    {returnMessage}
+                                </div>
+                            )}
+                            {(selectedOrder.status === "Paid" || selectedOrder.status === "Delivered") && (
+                                <div className="modal-actions">
+                                    <button
+                                        onClick={() => handleReturnOrder(selectedOrder._id)}
+                                        disabled={returningOrder}
+                                        className="delete-button"
+                                    >
+                                        {returningOrder ? "Processing Return..." : "Return Order"}
+                                    </button>
                                 </div>
                             )}
                         </div>
