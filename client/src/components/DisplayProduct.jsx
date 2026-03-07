@@ -54,13 +54,13 @@ export const DisplayProduct = () => {
             <h2>Details:</h2>
 
             <div className="product-details">
+                <p><strong>Description:</strong> {product.description}</p>
                 <p><strong>Category:</strong> {product.category}</p>
                 <p><strong>Brand:</strong> {product.brand}</p>
                 <p><strong>Colour:</strong> {product.colour}</p>
                 <p><strong>Energy Rating:</strong> {product.energy_rating}</p>
                 <p><strong>Release Date:</strong> {new Date(product.release_date).toLocaleDateString()}</p>
                 <p><strong>Price:</strong> €{product.price.toFixed(2)}</p>
-                <p><strong>Description:</strong> {product.description}</p>
 
             </div>
 

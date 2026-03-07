@@ -571,6 +571,12 @@ button:focus-visible {
     border-color: #646cff;
 }
 
+td {
+    max-width: 300px;
+    word-break: break-all;
+    vertical-align: top;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -1088,6 +1094,12 @@ button:focus-visible {
     padding: 5vh
 }
 
+.product-details-container h1{
+    max-width: 180vh;
+    word-break: break-all;
+    vertical-align: top;
+}
+
 .product-details{
     display: flex;
     gap: 10px;
@@ -1095,6 +1107,9 @@ button:focus-visible {
     flex-wrap: wrap;
     flex-direction: column;
     padding: 2vh;
+    max-width: 180vh;
+    word-break: break-all;
+    vertical-align: top;
 }
 
 /*.product-details p{*/
