@@ -28,8 +28,6 @@ a:hover {
 
 body {
   margin: 0;
-  /*display: flex;*/
-  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
 }
@@ -58,31 +56,19 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Home Page Styles */
+
 .home-container {
     min-height: 100vh;
     background-color: #242424;
     color: rgba(255, 255, 255, 0.87);
 }
 
-/* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, #262c9f 0%, #52269e 100%);
     padding: 120px 20px 80px 20px;
     text-align: center;
     position: relative;
     overflow: hidden;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.02)"/><circle cx="10" cy="50" r="0.5" fill="rgba(255,255,255,0.02)"/><circle cx="90" cy="30" r="0.5" fill="rgba(255,255,255,0.02)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    opacity: 0.1;
 }
 
 .hero-content {
@@ -114,7 +100,6 @@ button:focus-visible {
     flex-wrap: wrap;
 }
 
-/* Featured Products Section */
 .featured-section {
     padding: 80px 20px;
     max-width: 1200px;
@@ -225,7 +210,6 @@ button:focus-visible {
     margin-top: 40px;
 }
 
-/* About Section */
 .about-section {
     background-color: #1a1a1a;
     padding: 80px 20px;
@@ -284,7 +268,6 @@ button:focus-visible {
     line-height: 1.5;
 }
 
-/* Call to Action Section */
 .cta-section {
     background: linear-gradient(135deg, #646cff 0%, #4a5eff 100%);
     padding: 80px 20px;
@@ -308,7 +291,6 @@ button:focus-visible {
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .hero-section h1 {
         font-size: 2.5rem;
@@ -497,7 +479,6 @@ button:focus-visible {
     }
 }
 
-/* Admin Panel Styles */
 .admin-container {
     margin-top: 30px;
     padding: 20px;
@@ -730,7 +711,7 @@ td {
     border-color: #777;
 }
 
-/* Modal Styles */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -814,7 +795,6 @@ td {
     word-break: break-word;
 }
 
-/* Form Modal Styles */
 .form-modal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -830,7 +810,6 @@ td {
     border-top: 1px solid #333;
 }
 
-/* Confirmation Modal Styles */
 .confirmation-modal-content {
     background-color: #1a1a1a;
     border: 1px solid #333;
@@ -860,7 +839,6 @@ td {
     justify-content: center;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr;
@@ -924,7 +902,6 @@ td {
     }
 }
 
-/* Desktop: Hide cards on desktop */
 @media (min-width: 769px) {
     .card-grid {
         display: none;
@@ -1024,48 +1001,44 @@ td {
     border: 1px solid #ffcdd2;
 }
 
-/* Responsive Product Views */
 @media (max-width: 599px) {
-    /* Mobile phones (< 600px) - Show cards, hide all tables */
     .desktop-table,
     .tablet-table {
         display: none;
     }
     
     .card-grid {
-        display: grid; /* Show card grid */
+        display: grid;
         grid-template-columns: 1fr;
         gap: 15px;
     }
 }
 
 @media (min-width: 600px) and (max-width: 767px) {
-    /* Tablets (600px - 767px) - Show tablet view, hide desktop and cards */
     .desktop-table {
-        display: none; /* Hide desktop table */
+        display: none;
     }
     
     .tablet-table {
-        display: table; /* Show tablet table */
+        display: table;
     }
     
     .card-grid {
-        display: none; /* Hide card grid */
+        display: none;
     }
 }
 
 @media (min-width: 768px) {
-    /* Desktop (> 767px) - Show desktop table, hide tablet and cards */
     .desktop-table {
-        display: table; /* Show desktop table */
+        display: table;
     }
     
     .tablet-table {
-        display: none; /* Hide tablet table */
+        display: none;
     }
     
     .card-grid {
-        display: none; /* Hide card grid */
+        display: none;
     }
 }
 
@@ -1112,14 +1085,6 @@ td {
     vertical-align: top;
 }
 
-/*.product-details p{*/
-/*    margin: 0;*/
-/*    background-color: #1a1a1a;*/
-/*    color: white;*/
-/*    padding: 5px 10px;*/
-/*    border-radius: 4px;*/
-/*}*/
-
 .prod-det-but{
     display: flex;
     justify-content: center;
@@ -1138,10 +1103,10 @@ td {
 }
 
 .app-user-img{
-    width: 6vh;      /* Adjust to your desired size */
+    width: 6vh;
     height: 6vh;
     border-radius: 50%;
-    overflow: hidden; /* Ensures image doesn't spill outside the circle */
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1154,7 +1119,6 @@ td {
     object-fit: cover;
 }
 
-/* Order Management Styles */
 .status-badge {
     padding: 4px 8px;
     border-radius: 12px;
@@ -1220,8 +1184,6 @@ td {
 .modal-product-item:last-child {
     border-bottom: none;
 }
-
-/* User Orders Styles */
 .user-orders-section {
     margin-top: 40px;
     padding: 20px;
@@ -1286,7 +1248,6 @@ td {
     background: #535bf2;
 }
 
-/* Orders Controls Styles */
 .orders-controls {
     margin-bottom: 20px;
 }
@@ -1352,7 +1313,6 @@ td {
     margin-top: 10px;
 }
 
-/* Order Products Modal with ProductCard */
 .order-products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1380,12 +1340,10 @@ td {
     backdrop-filter: blur(5px);
 }
 
-/* Hide the action buttons in ProductCard when used in order modal */
 .order-product-card-wrapper .card-actions {
     display: none;
 }
 
-/* Adjust ProductCard styling for modal use */
 .order-product-card-wrapper .product-card {
     margin: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
