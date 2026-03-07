@@ -92,7 +92,11 @@ export const Cart = props => {
             ) : error ? (
                 <div className="error">{error}</div>
             ) : cartProducts.length === 0 ? (
-                <div>Your cart is empty</div>
+                <div>
+                    <h2>Your cart is empty</h2>
+                    <p>Add items to your cart to start shopping.</p>
+                    <Link to={'/products'} className="action-button">Add products from our catalouge here</Link>
+                </div>
             ) : (
                 <>
                     <table className="data-table">

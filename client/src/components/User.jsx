@@ -199,35 +199,47 @@ export const User = () => {
 
     return (
         <div className="user-container">
+
             <div className="profile-content">
-                <div className="profile-image">
-                    {user?.image ? (
-                        <img className="pf-img"
-                            src={`data:image/*;base64,${user.image}`}
-                            alt="Profile"
-                        />
-                    ) : (
-                        <div className="letter-img">
-                            {user?.fname?.charAt(0)?.toUpperCase() || 'U'}
-                        </div>
-                    )}
-                    
-                    <label htmlFor="image-upload" className="img-upl">
-                        {uploading ? "..." : "📷"}
-                    </label>
-                    <input
-                        id="image-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploading}
-                        style={{ display: "none" }}
-                    />
-                </div>
-                
                 <div>
-                    <h1>Welcome, {user?.fname}</h1>
-                    <p>{user?.email}</p>
+
+                    <div className="profile-image">
+
+                        <h1>Welcome, {user?.fname} {user?.lname}</h1>
+
+                        <div className="flex-pfp">
+                        {user?.image ? (
+                            <img className="pf-img"
+                                 src={`data:image/*;base64,${user.image}`}
+                                 alt="Profile"
+                            />
+                        ) : (
+                            <div className="letter-img">
+                                {user?.fname?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                        )}
+
+                        <label htmlFor="image-upload" className="img-upl">
+                            {uploading ? "..." : "📷"}
+                        </label>
+                        <input
+                            id="image-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploading}
+                            style={{ display: "none" }}
+                        />
+                        </div>
+                    </div>
+
+                    <h2>Account Details:</h2>
+                    <p>Name: {user?.fname} {user?.lname}</p>
+                    <p>Email: {user?.email}</p>
+
+                    {/*<p>Date of Creation: {user.date_created}</p>*/}
+
+
                 </div>
             </div>
 
