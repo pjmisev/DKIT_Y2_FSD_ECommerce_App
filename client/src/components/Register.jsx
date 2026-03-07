@@ -32,6 +32,7 @@ export const Register = ({ onLoginChange }) => {
     }
 
     return (
+        <div className="register-container">
         <form onSubmit={handleSubmit}>
             <h3>Register</h3>
             <input type="text" placeholder="First Name" value={fname} onChange={e => setFName(e.target.value)} required /><br/>
@@ -40,5 +41,6 @@ export const Register = ({ onLoginChange }) => {
             <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required /><br/>
             <button type="submit">Register</button>
         </form>
+        </div>
     )
 }

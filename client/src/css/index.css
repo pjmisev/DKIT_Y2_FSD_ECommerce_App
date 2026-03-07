@@ -1355,4 +1355,22 @@ td {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
+.login-container{
+    margin-top: 6vh;
+    padding: 2vh;
+    width: 100%;
+    background-color: #242424;
+    color: rgba(255, 255, 255, 0.87);
+    min-height: 100vh;
+}
+
+.register-container{
+    margin-top: 6vh;
+    padding: 2vh;
+    width: 100%;
+    background-color: #242424;
+    color: rgba(255, 255, 255, 0.87);
+    min-height: 100vh;
+}
+
 

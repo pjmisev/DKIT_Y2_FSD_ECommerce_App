@@ -30,6 +30,7 @@ export const Login = ({ onLoginChange }) => {
     }
 
     return (
+        <div className="login-container">
         <form onSubmit={handleSubmit}>
             <h3>Login</h3>
             <input
@@ -48,5 +49,6 @@ export const Login = ({ onLoginChange }) => {
             /><br/>
             <button type="submit">Login</button>
         </form>
+        </div>
     )
 }
