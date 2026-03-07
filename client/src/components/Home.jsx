@@ -53,9 +53,6 @@ export const Home = () => {
                         <Link to="/products" className="primary-button">
                             Shop Now
                         </Link>
-                        <Link to="/about" className="secondary-button">
-                            Learn More
-                        </Link>
                     </div>
                 </div>
             </section>
@@ -131,7 +128,7 @@ export const Home = () => {
                 <div className="cta-content">
                     <h2>Ready to Make a Difference?</h2>
                     <p>Join thousands of customers who have chosen sustainable living</p>
-                    <Link to="/products" className="primary-button">
+                    <Link to="/products" className="action-button">
                         Start Shopping Today
                     </Link>
                 </div>

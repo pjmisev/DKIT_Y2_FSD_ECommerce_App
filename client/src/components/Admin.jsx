@@ -655,7 +655,7 @@ export const Admin = props => {
                                 <button onClick={fetchProducts} className="refresh-button">
                                     Refresh Products
                                 </button>
-                                <button onClick={openCreateModal} className="primary-button">
+                                <button onClick={openCreateModal} className="action-button">
                                     Create New Product
                                 </button>
                             </div>
@@ -815,7 +815,7 @@ export const Admin = props => {
                             <button onClick={fetchUsers} className="refresh-button">
                                 Refresh Users
                             </button>
-                            <button onClick={openCreateUserModal} className="primary-button">
+                            <button onClick={openCreateUserModal} className="action-button">
                                 Create New User
                             </button>
                         </div>

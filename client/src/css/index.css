@@ -554,7 +554,6 @@ button:focus-visible {
 
 .refresh-button {
     padding: 10px 20px;
-    margin-bottom: 15px;
     background-color: #1a1a1a;
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid #333;
@@ -665,7 +664,6 @@ button:focus-visible {
 
 .primary-button {
     padding: 10px 20px;
-    margin-bottom: 15px;
     background-color: #646cff;
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid #646cff;
@@ -953,8 +951,6 @@ button:focus-visible {
     min-height: 100vh;
 }
 
-
-
 .user-profile {
     display: flex;
     align-items: center;
@@ -1000,7 +996,6 @@ button:focus-visible {
 {
     bottom: 0;
     right: 0;
-    background-color: #007bff;
     color: white;
     border-radius: 50%;
     width: 36px;
@@ -1085,21 +1080,30 @@ button:focus-visible {
     font-size: 0.8rem;
 }
 
-.product-details{
+.product-details-container{
     display: flex;
-    flex-direction: row;
-    gap: 10px;
-    justify-content: space-evenly;
+    flex-direction: column;
     flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 5vh
 }
 
-.product-details p{
-    margin: 0;
-    background-color: #777777;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
+.product-details{
+    display: flex;
+    gap: 10px;
+    background-color: #1a1a1a;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 2vh;
 }
+
+/*.product-details p{*/
+/*    margin: 0;*/
+/*    background-color: #1a1a1a;*/
+/*    color: white;*/
+/*    padding: 5px 10px;*/
+/*    border-radius: 4px;*/
+/*}*/
 
 .prod-det-but{
     display: flex;
@@ -1109,8 +1113,6 @@ button:focus-visible {
 }
 
 .product-details-image{
-    display: flex;
-    justify-content: center;
 }
 
 .product-details-image img{

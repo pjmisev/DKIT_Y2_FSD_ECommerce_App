@@ -35,9 +35,9 @@ export const DisplayProduct = () => {
     }
 
     return (
-        <div style={{ padding: "20px" }}>#
+        <div className="product-details-container">
 
-            <h1 style={{textAlign: "center"}}><strong>{product.model}</strong></h1>
+            <h1><strong>{product.model}</strong></h1>
 
             <div className="product-details-image">
 
@@ -51,7 +51,7 @@ export const DisplayProduct = () => {
             )}
             </div>
 
-            <h2 style={{textAlign: "center"}}>Details:</h2>
+            <h2>Details:</h2>
 
             <div className="product-details">
                 <p><strong>Category:</strong> {product.category}</p>

@@ -45,7 +45,7 @@ export const Logout = ({ onLoginChange }) => {
                     </button>
                     <button
                         onClick={handleCancel}
-                        className="tertiary-button"
+                        className="action-button"
                         disabled={isLoading}
                     >
                         Cancel
