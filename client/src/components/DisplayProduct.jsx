@@ -34,6 +34,18 @@ export const DisplayProduct = () => {
         return <div style={{ color: "red" }}>{error}</div>;
     }
 
+    const addToCart = (productId) => {
+        const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        if (!existingCart.includes(productId)) {
+            const updatedCart = [...existingCart, productId];
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            alert("Added to cart!");
+        } else {
+            alert("Item already in cart");
+        }
+    };
+
     return (
         <div className="product-details-container">
 
@@ -65,7 +77,7 @@ export const DisplayProduct = () => {
             </div>
 
             <div className="prod-det-but">
-                <button className="action-button">Add to Cart</button>
+                <button className="action-button" onClick={() => addToCart(product._id)}>Add to Cart</button>
                 <Link to="/products" className="action-button">Back</Link>
             </div>
 
