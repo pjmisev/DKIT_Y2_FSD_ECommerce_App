@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const AdminProducts = ({
+export const AdminProducts = ({ 
+    openModal,
     setModalItem, 
     setModalType,
-    setShowFormModal,
-    setFormMode,
-    setFormType,
-    setSelectedId,
-    setFormData,
+    confirmationModal,
     closeConfirmationModal 
 }) => {
     const [products, setProducts] = useState([]);
@@ -19,6 +16,23 @@ export const AdminProducts = ({
     const [productCategoryFilter, setProductCategoryFilter] = useState('all');
     const [productStatusFilter, setProductStatusFilter] = useState('all');
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedId, setSelectedId] = useState('');
+    const [showFormModal, setShowFormModal] = useState(false);
+    const [formMode, setFormMode] = useState('create');
+    const [formType, setFormType] = useState('product');
+    const [formData, setFormData] = useState({
+        category: '',
+        brand: '',
+        model: '',
+        description: '',
+        colour: '',
+        release_date: '',
+        energy_rating: '',
+        price: '',
+        status: true,
+        stocking_status: 'In Stock',
+        stock_level: 0
+    });
 
     const API_URL = 'http://localhost:4000/api';
 
@@ -234,7 +248,8 @@ export const AdminProducts = ({
     }, [products, productSearchTerm, productSortBy, productSortOrder, productCategoryFilter, productStatusFilter]);
 
     return (
-        <section className="section-card">
+        <>
+            <section className="section-card">
             <h2 className="section-title">Products</h2>
             <div className="orders-controls">
                 <div className="search-filter-row">
@@ -401,5 +416,109 @@ export const AdminProducts = ({
                 </>
             )}
         </section>
+
+        {showFormModal && formType === 'product' && (
+            <div className="modal-overlay" onClick={() => setShowFormModal(false)}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2 className="modal-title">
+                            {formMode === 'edit' ? `UPDATE Product (ID: ${selectedId})` : 'CREATE New Product'}
+                        </h2>
+                        <button className="modal-close" onClick={() => setShowFormModal(false)}>
+                            ×
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <form onSubmit={formMode === 'create' ? createProduct : updateProduct} className="form-modal-grid">
+                            <input
+                                placeholder="Category"
+                                value={formData.category}
+                                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Brand"
+                                value={formData.brand}
+                                onChange={(e) => setFormData({...formData, brand: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Model"
+                                value={formData.model}
+                                onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Description"
+                                value={formData.description}
+                                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Colour"
+                                value={formData.colour}
+                                onChange={(e) => setFormData({...formData, colour: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Release Date (YYYY-MM-DD)"
+                                value={formData.release_date}
+                                onChange={(e) => setFormData({...formData, release_date: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Energy Rating (A-G)"
+                                value={formData.energy_rating}
+                                onChange={(e) => setFormData({...formData, energy_rating: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Price"
+                                type="number"
+                                step="0.01"
+                                value={formData.price}
+                                onChange={(e) => setFormData({...formData, price: e.target.value})}
+                                className="form-input"
+                            />
+                            <select
+                                value={formData.stocking_status}
+                                onChange={(e) => setFormData({...formData, stocking_status: e.target.value})}
+                                className="form-select"
+                            >
+                                <option value="In Stock">In Stock</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                                <option value="Limited Stock">Limited Stock</option>
+                            </select>
+                            <input
+                                placeholder="Stock Level"
+                                type="number"
+                                value={formData.stock_level}
+                                onChange={(e) => setFormData({...formData, stock_level: parseInt(e.target.value) || 0})}
+                                className="form-input"
+                            />
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                className="form-input"
+                                style={{ gridColumn: '1 / -1' }}
+                            />
+                            <div className="form-modal-actions">
+                                <button type="submit" className="primary-button">
+                                    {formMode === 'create' ? 'Create Product' : 'Update Product'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowFormModal(false)}
+                                    className="tertiary-button"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 };

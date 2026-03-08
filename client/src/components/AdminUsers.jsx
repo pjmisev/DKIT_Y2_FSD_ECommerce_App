@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const AdminUsers = ({
+export const AdminUsers = ({ 
+    openModal,
     setModalItem, 
     setModalType,
-    setShowFormModal,
-    setFormMode,
-    setFormType,
-    setSelectedId,
-    setUserFormData,
+    confirmationModal,
     closeConfirmationModal 
 }) => {
     const [users, setUsers] = useState([]);
@@ -18,6 +15,18 @@ export const AdminUsers = ({
     const [userSortOrder, setUserSortOrder] = useState('asc');
     const [userAccessLevelFilter, setUserAccessLevelFilter] = useState('all');
     const [userStatusFilter, setUserStatusFilter] = useState('all');
+    const [selectedId, setSelectedId] = useState('');
+    const [showFormModal, setShowFormModal] = useState(false);
+    const [formMode, setFormMode] = useState('create');
+    const [formType, setFormType] = useState('user');
+    const [userFormData, setUserFormData] = useState({
+        fname: '',
+        lname: '',
+        email: '',
+        password: '',
+        accessLevel: 1,
+        status: true
+    });
 
     const API_URL = 'http://localhost:4000/api';
 
@@ -204,7 +213,8 @@ export const AdminUsers = ({
     }, [users, userSearchTerm, userSortBy, userSortOrder, userAccessLevelFilter, userStatusFilter]);
 
     return (
-        <section className="section-card">
+        <>
+            <section className="section-card">
             <h2 className="section-title">Users</h2>
             <div className="orders-controls">
                 <div className="search-filter-row">
@@ -360,5 +370,81 @@ export const AdminUsers = ({
                 </>
             )}
         </section>
+
+        {showFormModal && formType === 'user' && (
+            <div className="modal-overlay" onClick={() => setShowFormModal(false)}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2 className="modal-title">
+                            {formMode === 'edit' ? `UPDATE User (ID: ${selectedId})` : 'CREATE New User'}
+                        </h2>
+                        <button className="modal-close" onClick={() => setShowFormModal(false)}>
+                            ×
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <form onSubmit={formMode === 'create' ? createUser : updateUser} className="form-modal-grid">
+                            <input
+                                placeholder="First Name"
+                                value={userFormData.fname}
+                                onChange={(e) => setUserFormData({...userFormData, fname: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Last Name"
+                                value={userFormData.lname}
+                                onChange={(e) => setUserFormData({...userFormData, lname: e.target.value})}
+                                className="form-input"
+                            />
+                            <input
+                                placeholder="Email"
+                                type="email"
+                                value={userFormData.email}
+                                onChange={(e) => setUserFormData({...userFormData, email: e.target.value})}
+                                className="form-input"
+                                style={{ gridColumn: '1 / -1' }}
+                            />
+                            <input
+                                placeholder="Password"
+                                type="password"
+                                value={userFormData.password}
+                                onChange={(e) => setUserFormData({...userFormData, password: e.target.value})}
+                                className="form-input"
+                                style={{ gridColumn: '1 / -1' }}
+                            />
+                            <select
+                                value={userFormData.accessLevel}
+                                onChange={(e) => setUserFormData({...userFormData, accessLevel: parseInt(e.target.value)})}
+                                className="form-select"
+                            >
+                                <option value={1}>User</option>
+                                <option value={2}>Admin</option>
+                            </select>
+                            <select
+                                value={userFormData.status}
+                                onChange={(e) => setUserFormData({...userFormData, status: e.target.value === 'true'})}
+                                className="form-select"
+                            >
+                                <option value={true}>Active</option>
+                                <option value={false}>Inactive</option>
+                            </select>
+                            <div className="form-modal-actions">
+                                <button type="submit" className="primary-button">
+                                    {formMode === 'create' ? 'Create User' : 'Update User'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowFormModal(false)}
+                                    className="tertiary-button"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 };
