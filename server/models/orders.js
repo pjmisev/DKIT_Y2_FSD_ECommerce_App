@@ -1,5 +1,4 @@
 const mongoose = require(`mongoose`)
-const {productsSchema} = require('./products')
 
 let ordersSchema = new mongoose.Schema(
     {
@@ -14,7 +13,7 @@ let ordersSchema = new mongoose.Schema(
         postcode: {type: String, required:true},
         county: {type: String, required:true},
         country: {type: String, required:true},
-        products: [productsSchema],
+        products: [{type: String, ref: 'products'}],
         status: {type: String, default: "Pending", required:true},
         paypalPaymentID: {type: String},
         paypalPayerID: {type: String},
