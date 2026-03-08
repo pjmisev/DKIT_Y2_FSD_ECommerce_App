@@ -4,7 +4,8 @@ import axios from 'axios';
 export const AdminUsers = ({
     setModalItem, 
     setModalType,
-    closeConfirmationModal 
+    closeConfirmationModal,
+    setConfirmationModal
 }) => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -382,6 +383,20 @@ export const AdminUsers = ({
                     </div>
                     <div className="modal-body">
                         <form onSubmit={formMode === 'create' ? createUser : updateUser} className="form-modal-grid">
+                            {formMode === 'edit' && selectedId && (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '20px' }}>
+                                    <div className="modal-field-label">Current Profile Picture:</div>
+                                    <div className="modal-image-container">
+                                        <img 
+                                            src={users.find(u => u._id === selectedId)?.image ? 
+                                                `data:image/*;base64,${users.find(u => u._id === selectedId)?.image}` : 
+                                                null}
+                                            alt="Current profile"
+                                            className="modal-profile-image"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             <input
                                 placeholder="First Name"
                                 value={userFormData.fname}

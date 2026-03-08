@@ -4,7 +4,8 @@ import axios from 'axios';
 export const AdminProducts = ({
     setModalItem, 
     setModalType,
-    closeConfirmationModal 
+    closeConfirmationModal,
+    setConfirmationModal
 }) => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -428,6 +429,20 @@ export const AdminProducts = ({
                     </div>
                     <div className="modal-body">
                         <form onSubmit={formMode === 'create' ? createProduct : updateProduct} className="form-modal-grid">
+                            {formMode === 'edit' && selectedId && (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '20px' }}>
+                                    <div className="modal-field-label">Current Product Image:</div>
+                                    <div className="modal-image-container">
+                                        <img 
+                                            src={products.find(p => p._id === selectedId)?.image ? 
+                                                `data:image/png;base64,${products.find(p => p._id === selectedId)?.image}` : 
+                                                '/placeholder.png'}
+                                            alt="Current product"
+                                            className="modal-product-image"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             <input
                                 placeholder="Category"
                                 value={formData.category}

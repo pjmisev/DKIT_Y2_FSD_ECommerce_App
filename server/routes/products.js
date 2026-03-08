@@ -227,11 +227,31 @@ const deleteProductDocument = (req, res, next) =>
         .catch(err => next(createError(500, `A server error has occurred.`)));
 }
 
+const getProductsByIds = (req, res, next) => {
+    const productIds = req.body.productIds || [];
+    
+    if (productIds.length === 0) {
+        return next(createError(400, "No product IDs provided"));
+    }
+    
+    productsModel.find({'_id': {$in: productIds}})
+        .then(data => {
+            const imagePromises = data.map(product => getProductImage(product));
+            Promise.all(imagePromises)
+                .then(productsWithImages => {
+                    res.json(productsWithImages);
+                })
+                .catch(err => next(createError(500, `Error processing images`)));
+        })
+        .catch(err => next(createError(500, `A server error has occurred.`)));
+};
+
 // ROUTES
 
 router.get(`/api/products/featured`, getFeaturedProducts)
 router.get(`/api/products`, getAllProducts)
 router.get(`/api/products/:id`, getOneProduct)
+router.post(`/api/products/by-ids`, getProductsByIds)
 router.post(`/api/products/calculate-pricing`, calculateCartPricing)
 router.post(`/api/products`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, checkThatFileIsUploaded, checkThatFileIsAnImageFile, validateProductData, createNewProductDocument)
 router.put(`/api/products/:id`, upload.single("image"), verifyUsersJWTPassword, checkThatUserIsAnAdministrator, validateProductData, checkThatFileIsAnImageFileIfPresent, updateProductDocument)

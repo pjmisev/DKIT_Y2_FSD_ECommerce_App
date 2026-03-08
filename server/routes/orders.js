@@ -4,8 +4,30 @@ const productsModel = require(`../models/products`)
 const {validateString, checkThatUserIsAnAdministrator} = require("./middleware");
 const createError = require("http-errors");
 const {verifyUsersJWTPassword} = require("./middleware");
+const fs = require('fs')
+
+const multer = require('multer')
 
 // MIDDLEWARE
+
+const getProductImage = (product) => {
+    return new Promise((resolve) => {
+        if (!product.image) {
+            resolve({ ...product.toObject(), image: null });
+            return;
+        }
+        const filePath = `${process.env.UPLOADED_FILES_FOLDER}/${product.image}`;
+
+        fs.readFile(filePath, 'base64', (err, fileData) => {
+            if (err) {
+                resolve({ ...product.toObject(), image: null });
+            } else {
+                resolve({ ...product.toObject(), image: fileData });
+            }
+        });
+    });
+};
+
 
 const getAllOrders = (req, res, next) =>
 {
@@ -136,12 +158,7 @@ const createPayPalOrder = (req, res, next) => {
             // Extract customer information from PayPal data
             const firstName = req.body.customerFirstName || req.body.customerName?.split(' ')[0] || "PayPal";
             const lastName = req.body.customerLastName || req.body.customerName?.split(' ').slice(1).join(' ') || "Customer";
-            
-            console.log("=== CUSTOMER INFO FROM REQUEST ===");
-            console.log("First name:", req.body.customerFirstName);
-            console.log("Last name:", req.body.customerLastName);
-            console.log("Email:", req.body.customerEmail);
-            console.log("================================");
+
 
             // Use pricing breakdown from request, or calculate as fallback
             let pricing;
@@ -181,9 +198,7 @@ const createPayPalOrder = (req, res, next) => {
                 postcode: req.body.postcode || "00000",
                 county: req.body.county || req.body.state || "Online",
                 country: req.body.country || "Online",
-                
-                // Order details
-                products: products,
+                products: productIds,
                 status: "Paid",
                 paypalPaymentID: req.params.orderID,
                 paypalPayerID: req.body.paypalPayerID,

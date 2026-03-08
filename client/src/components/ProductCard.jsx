@@ -8,7 +8,7 @@ export const ProductCard = ({ product, addToCart }) => {
         <div className="product-card">
             {product.image ? (
                 <img
-                    src={`data:image/jpeg;base64,${product.image}`}
+                    src={`data:image/*;base64,${product.image}`}
                     alt={product.model}
                     className="product-image"
                 />

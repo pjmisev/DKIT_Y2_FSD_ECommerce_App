@@ -11,6 +11,7 @@ export const AdminOrders = () => {
     const [orderStatusFilter, setOrderStatusFilter] = useState('all');
     const [modalItem, setModalItem] = useState(null);
     const [modalType, setModalType] = useState('');
+    const [orderProducts, setOrderProducts] = useState([]);
 
     const API_URL = 'http://localhost:4000/api';
 
@@ -40,9 +41,24 @@ export const AdminOrders = () => {
         }
     };
 
-    const openModal = (item, type) => {
+    const openModal = async (item, type) => {
         setModalItem(item);
         setModalType(type);
+
+        if (type === 'order' && item.products) {
+            try {
+                const productIds = item.products.map(p => typeof p === 'string' ? p : p._id);
+                const { data } = await axios.post(`${API_URL}/products/by-ids`, { productIds }, {
+                    headers: { authorization: localStorage.token }
+                });
+                setOrderProducts(data);
+            } catch (err) {
+                console.error('Error fetching product details:', err);
+                setOrderProducts([]);
+            }
+        } else {
+            setOrderProducts([]);
+        }
     };
 
     const closeModal = () => {
@@ -317,7 +333,7 @@ export const AdminOrders = () => {
                                 <div className="modal-field">
                                     <span className="modal-field-label">Products:</span>
                                     <div className="order-products-grid">
-                                        {modalItem.products?.map((product, index) => (
+                                        {orderProducts.map((product, index) => (
                                             <div key={index} className="order-product-card-wrapper">
                                                 <ProductCard product={product} addToCart={() => {}} />
                                                 <div className="order-product-price-overlay">

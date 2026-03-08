@@ -24,8 +24,7 @@ export const Cart = props => {
                 .then(res => {
                     const cartItems = res.data.filter(p => savedIds.includes(p._id));
                     setCartProducts(cartItems);
-                    
-                    // Calculate pricing using the new endpoint
+
                     return axios.post(`${SERVER_HOST}/api/products/calculate-pricing`, {
                         productIds: savedIds
                     });

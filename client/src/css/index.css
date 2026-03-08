@@ -796,6 +796,124 @@ td {
     word-break: break-word;
 }
 
+.modal-image-container {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.modal-product-image {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.modal-profile-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #333;
+}
+
+.modal-view-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-section {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.modal-section-title {
+    margin: 0 0 15px 0;
+    color: #646cff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+}
+
+.modal-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.modal-field-full {
+    grid-column: 1 / -1;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-price {
+    font-weight: 700;
+    color: #4CAF50;
+    font-size: 1.1rem;
+}
+
+.status-badge.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status-badge.inactive {
+    background-color: #f44336;
+    color: white;
+}
+
+.status-badge.admin {
+    background-color: #9c27b0;
+    color: white;
+}
+
+.status-badge.user {
+    background-color: #2196f3;
+    color: white;
+}
+
+.status-badge.in-stock,
+.status-badge.limited-stock {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status-badge.out-of-stock {
+    background-color: #f44336;
+    color: white;
+}
+
+.order-product-item {
+    background-color: #333;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.order-product-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-product-info strong {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.order-product-info span {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
 .form-modal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -918,6 +1036,15 @@ td {
     min-height: 100vh;
 }
 
+.products-container {
+    margin-top: 6vh;
+    padding: 20px;
+    width: 100%;
+    background-color: #242424;
+    color: rgba(255, 255, 255, 0.87);
+    min-height: 100vh;
+}
+
 .order-container {
     margin-top: 30px;
     padding: 20px;
@@ -1012,21 +1139,21 @@ td {
         margin-bottom: 20px;
     }
     
-    .data-table {
+    .cart-container .data-table {
         font-size: 0.9rem;
     }
     
-    .data-table th,
-    .data-table td {
+    .cart-container .data-table th,
+    .cart-container .data-table td {
         padding: 8px;
     }
     
-    .data-table img {
+    .cart-container .data-table img {
         width: 60px !important;
         height: 60px !important;
     }
     
-    .action-button {
+    .cart-container .action-button {
         padding: 6px 12px;
         font-size: 0.8rem;
     }
@@ -1036,88 +1163,88 @@ td {
         display: block;
         width: 100%;
     }
-    
+
     /* Admin pages tablet styles */
     .admin-container {
         padding: 15px;
     }
-    
+
     .section-card {
         padding: 15px;
         margin-bottom: 20px;
     }
-    
+
     .section-title {
         font-size: 1.5rem;
         margin-bottom: 15px;
     }
-    
+
     .orders-controls {
         margin-bottom: 15px;
     }
-    
+
     .search-filter-row {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .search-input {
         min-width: auto;
         width: 100%;
     }
-    
+
     .form-select {
         width: 100%;
         margin-bottom: 5px;
     }
-    
+
     .sort-controls {
         flex-wrap: wrap;
         gap: 8px;
     }
-    
+
     .sort-controls .form-select {
         width: auto;
         flex: 1;
         min-width: 150px;
     }
-    
+
     .sort-order-btn {
         min-width: 35px;
         height: 32px;
         font-size: 14px;
     }
-    
+
     .refresh-button,
     .action-button {
         padding: 6px 12px;
         font-size: 0.8rem;
         white-space: nowrap;
     }
-    
-    .data-table {
+
+    .section-card .data-table {
         font-size: 0.8rem;
         overflow-x: auto;
         display: block;
         white-space: nowrap;
     }
     
-    .data-table th,
-    .data-table td {
+    .section-card .data-table th,
+    .section-card .data-table td {
         padding: 6px 8px;
         min-width: 80px;
         white-space: nowrap;
     }
     
-    .data-table th:first-child,
-    .data-table td:first-child {
+    .section-card .data-table th:first-child,
+    .section-card .data-table td:first-child {
         min-width: 60px;
         max-width: 100px;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     
-    .data-table img {
+    .section-card .data-table img {
         width: 50px !important;
         height: 50px !important;
     }

@@ -105,7 +105,7 @@ export const Products = props => {
     const uniqueCategories = [...new Set(products.map((product) => product.category))];
 
     return (
-        <div className="cart-container">
+        <div className="products-container">
             <header style={{ textAlign: 'center', padding: '20px 0' }}>
                 <h1>Products</h1>
                 <p>View our great selection of appliances</p>
