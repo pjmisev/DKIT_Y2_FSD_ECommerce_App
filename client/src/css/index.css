@@ -1002,6 +1002,159 @@ td {
     border: 1px solid #ffcdd2;
 }
 
+@media (min-width: 600px) and (max-width: 767px) {
+    .cart-container {
+        padding: 15px;
+    }
+    
+    .cart-container h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+    
+    .data-table {
+        font-size: 0.9rem;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px;
+    }
+    
+    .data-table img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .action-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .cart-container .action-button.delete-button {
+        margin-top: 5px;
+        display: block;
+        width: 100%;
+    }
+    
+    /* Admin pages tablet styles */
+    .admin-container {
+        padding: 15px;
+    }
+    
+    .section-card {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .orders-controls {
+        margin-bottom: 15px;
+    }
+    
+    .search-filter-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-input {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .form-select {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .sort-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .sort-controls .form-select {
+        width: auto;
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .sort-order-btn {
+        min-width: 35px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .refresh-button,
+    .action-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    
+    .data-table {
+        font-size: 0.8rem;
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 6px 8px;
+        min-width: 80px;
+        white-space: nowrap;
+    }
+    
+    .data-table th:first-child,
+    .data-table td:first-child {
+        min-width: 60px;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .data-table img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    /* Modal tablet styles */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 85vh;
+    }
+    
+    .modal-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .modal-field-label {
+        min-width: auto;
+        margin-right: 0;
+    }
+    
+    .form-modal-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .form-modal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-modal-actions button {
+        width: 100%;
+    }
+}
+
 @media (max-width: 599px) {
     .desktop-table,
     .tablet-table {
@@ -1012,6 +1165,120 @@ td {
         display: grid;
         grid-template-columns: 1fr;
         gap: 15px;
+    }
+    
+    /* Mobile cart styles */
+    .cart-container {
+        padding: 15px;
+    }
+    
+    .cart-container h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .cart-container .data-table {
+        display: none;
+    }
+    
+    .cart-container .cart-mobile-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .cart-product-card {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cart-product-header {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .cart-product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+    
+    .cart-product-info {
+        flex: 1;
+    }
+    
+    .cart-product-brand {
+        font-weight: 600;
+        color: #646cff;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+    
+    .cart-product-model {
+        color: rgba(255, 255, 255, 0.87);
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .cart-product-price {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4CAF50;
+    }
+    
+    .cart-product-actions {
+        margin-top: 10px;
+    }
+    
+    .cart-summary {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .cart-summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #333;
+    }
+    
+    .cart-summary-row:last-child {
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding-top: 15px;
+        border-top: 2px solid #000;
+    }
+    
+    .cart-summary-label {
+        color: #ccc;
+    }
+    
+    .cart-summary-value {
+        color: rgba(255, 255, 255, 0.87);
+        font-weight: 500;
+    }
+    
+    .cart-summary-row:last-child .cart-summary-value {
+        color: #4CAF50;
+    }
+    
+    .cart-checkout-btn {
+        width: 100%;
+        margin-top: 15px;
+        padding: 12px;
     }
 }
 
@@ -1027,6 +1294,16 @@ td {
     .card-grid {
         display: none;
     }
+    
+    /* Hide mobile cart on tablet */
+    .cart-container .cart-mobile-grid {
+        display: none;
+    }
+    
+    /* Show table on tablet */
+    .cart-container .data-table {
+        display: table;
+    }
 }
 
 @media (min-width: 768px) {
@@ -1040,6 +1317,16 @@ td {
     
     .card-grid {
         display: none;
+    }
+    
+    /* Hide mobile cart on desktop */
+    .cart-container .cart-mobile-grid {
+        display: none;
+    }
+    
+    /* Show table on desktop */
+    .cart-container .data-table {
+        display: table;
     }
 }
 
@@ -1104,8 +1391,8 @@ td {
 }
 
 .app-user-img{
-    width: 6vh;
-    height: 6vh;
+    width: 4vh;
+    height: 4vh;
     border-radius: 50%;
     overflow: hidden;
     display: flex;

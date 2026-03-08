@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const AdminUsers = ({ 
-    openModal,
+export const AdminUsers = ({
     setModalItem, 
     setModalType,
-    confirmationModal,
     closeConfirmationModal 
 }) => {
     const [users, setUsers] = useState([]);

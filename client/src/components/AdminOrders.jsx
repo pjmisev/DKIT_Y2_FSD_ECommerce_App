@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ProductCard } from './ProductCard';
 
-export const AdminOrders = ({
-    setModalItem, 
-    setModalType
-}) => {
+export const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [orderSearchTerm, setOrderSearchTerm] = useState('');
     const [orderSortBy, setOrderSortBy] = useState('date');
     const [orderSortOrder, setOrderSortOrder] = useState('desc');
     const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+    const [modalItem, setModalItem] = useState(null);
+    const [modalType, setModalType] = useState('');
 
     const API_URL = 'http://localhost:4000/api';
 
@@ -38,6 +38,16 @@ export const AdminOrders = ({
         } catch (err) {
             console.error('Error updating order status:', err);
         }
+    };
+
+    const openModal = (item, type) => {
+        setModalItem(item);
+        setModalType(type);
+    };
+
+    const closeModal = () => {
+        setModalItem(null);
+        setModalType('');
     };
 
     const filterAndSortOrders = () => {
@@ -102,7 +112,8 @@ export const AdminOrders = ({
     }, [orders, orderSearchTerm, orderSortBy, orderSortOrder, orderStatusFilter]);
 
     return (
-        <section className="section-card">
+        <>
+            <section className="section-card">
             <h2 className="section-title">Orders</h2>
             <div className="orders-controls">
                 <div className="search-filter-row">
@@ -181,10 +192,7 @@ export const AdminOrders = ({
                                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                                 <td>
                                     <button
-                                        onClick={() => {
-                                            setModalItem(order);
-                                            setModalType('order');
-                                        }}
+                                        onClick={() => openModal(order, 'order')}
                                         className="action-button"
                                     >
                                         View
@@ -231,10 +239,7 @@ export const AdminOrders = ({
                                 </div>
                                 <div className="card-actions">
                                     <button
-                                        onClick={() => {
-                                            setModalItem(order);
-                                            setModalType('order');
-                                        }}
+                                        onClick={() => openModal(order, 'order')}
                                         className="action-button"
                                     >
                                         View Details
@@ -259,5 +264,81 @@ export const AdminOrders = ({
                 </>
             )}
         </section>
+
+        {modalItem && (
+            <div className="modal-overlay" onClick={closeModal}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2 className="modal-title">
+                            {modalType === 'order' ? 'Order Details' : 'Item Details'}
+                        </h2>
+                        <button className="modal-close" onClick={closeModal}>
+                            ×
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        {modalType === 'order' ? (
+                            <>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Order ID:</span>
+                                    <span className="modal-field-value">{modalItem._id}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Customer Name:</span>
+                                    <span className="modal-field-value">{modalItem.fname} {modalItem.lname}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Email:</span>
+                                    <span className="modal-field-value">{modalItem.email}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Status:</span>
+                                    <span className="modal-field-value">{modalItem.status}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Total Net:</span>
+                                    <span className="modal-field-value">${modalItem.total_net}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Delivery Cost:</span>
+                                    <span className="modal-field-value">${modalItem.delivery_cost}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Total Gross:</span>
+                                    <span className="modal-field-value">${modalItem.total_gross}</span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Address:</span>
+                                    <span className="modal-field-value">
+                                        {modalItem.address_line_1}, {modalItem.address_line_2 && modalItem.address_line_2 + ', '}
+                                        {modalItem.postcode}, {modalItem.county}, {modalItem.country}
+                                    </span>
+                                </div>
+                                <div className="modal-field">
+                                    <span className="modal-field-label">Products:</span>
+                                    <div className="order-products-grid">
+                                        {modalItem.products?.map((product, index) => (
+                                            <div key={index} className="order-product-card-wrapper">
+                                                <ProductCard product={product} addToCart={() => {}} />
+                                                <div className="order-product-price-overlay">
+                                                    ${product.price}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {modalItem.paypalPaymentID && (
+                                    <div className="modal-field">
+                                        <span className="modal-field-label">PayPal Payment ID:</span>
+                                        <span className="modal-field-value">{modalItem.paypalPaymentID}</span>
+                                    </div>
+                                )}
+                            </>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 };

@@ -21,7 +21,22 @@ export const Login = ({ onLoginChange }) => {
                         localStorage.name = res.data.name
                         localStorage.accessLevel = res.data.accessLevel
                         localStorage.token = res.data.token
-                        onLoginChange()
+                        
+                        // Fetch user data to get profile image
+                        axios.get(`${SERVER_HOST}/api/user`, {
+                            headers: {
+                                authorization: res.data.token
+                            }
+                        }).then(userRes => {
+                            if (userRes.data && userRes.data.image) {
+                                localStorage.setItem("userImage", userRes.data.image);
+                            }
+                            onLoginChange();
+                        }).catch(err => {
+                            console.log('Error fetching user data:', err);
+                            onLoginChange();
+                        });
+                        
                         navigate("/")
                     }
                 }

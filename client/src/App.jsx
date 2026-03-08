@@ -77,9 +77,9 @@ function App() {
                         <>
                             <Link to="/user" className="app-user-img">
                                 {profileImage ? (
-                                    <img src={`data:image/*;base64,${profileImage}`} alt="Profile" />
+                                    <img src={`data:image/*;base64,${profileImage}`} alt="Profile" className="profile-nav-img" />
                                 ) : (
-                                    "U" // Fallback icon
+                                    <span className="profile-fallback">U</span> // Fallback icon
                                 )}
                             </Link>
                             <Link to="/logout" className="nav-link">Logout</Link>

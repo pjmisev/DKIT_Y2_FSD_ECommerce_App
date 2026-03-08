@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const AdminProducts = ({ 
-    openModal,
+export const AdminProducts = ({
     setModalItem, 
     setModalType,
-    confirmationModal,
     closeConfirmationModal 
 }) => {
     const [products, setProducts] = useState([]);

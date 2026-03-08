@@ -99,6 +99,7 @@ export const Cart = props => {
                 </div>
             ) : (
                 <>
+                    {/* Desktop/Tablet Table View */}
                     <table className="data-table">
                         <thead>
                         <tr>
@@ -179,6 +180,76 @@ export const Cart = props => {
                         </tr>
                         </tfoot>
                     </table>
+
+                    {/* Mobile Card View */}
+                    <div className="cart-mobile-grid">
+                        {cartProducts?.map((product) => (
+                            <div key={product._id} className="cart-product-card">
+                                <div className="cart-product-header">
+                                    <img
+                                        src={
+                                            product.image
+                                                ? `data:image/png;base64,${product.image}`
+                                                : '/placeholder.png'
+                                        }
+                                        alt={product.model}
+                                        className="cart-product-image"
+                                    />
+                                    <div className="cart-product-info">
+                                        <div className="cart-product-brand">{product.brand}</div>
+                                        <div className="cart-product-model">{product.model}</div>
+                                        <div className="cart-product-price">€{product.price.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                <div className="cart-product-actions">
+                                    <button
+                                        onClick={() => {
+                                            removeFromCart(product._id);
+                                        }}
+                                        className="action-button delete-button"
+                                        style={{ width: '100%' }}
+                                    >
+                                        Remove from Cart
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        
+                        {/* Mobile Summary */}
+                        <div className="cart-summary">
+                            <div className="cart-summary-row">
+                                <span className="cart-summary-label">Subtotal:</span>
+                                <span className="cart-summary-value">€{pricing?.subtotal.toFixed(2) || '0.00'}</span>
+                            </div>
+                            <div className="cart-summary-row">
+                                <span className="cart-summary-label">
+                                    Shipping:
+                                    {pricing?.freeShipping && (
+                                        <span style={{ color: 'green', marginLeft: '5px', fontSize: '0.8rem' }}>
+                                            (FREE over €100)
+                                        </span>
+                                    )}
+                                </span>
+                                <span className="cart-summary-value">
+                                    {pricing?.freeShipping ? (
+                                        <span style={{ color: 'green' }}>FREE</span>
+                                    ) : (
+                                        `€${pricing?.shippingCost.toFixed(2) || '0.00'}`
+                                    )}
+                                </span>
+                            </div>
+                            <div className="cart-summary-row">
+                                <span className="cart-summary-label">Total:</span>
+                                <span className="cart-summary-value">€{pricing?.total.toFixed(2) || '0.00'}</span>
+                            </div>
+                            <BuyProduct
+                                product={{products: cartProducts}}
+                                price={pricing?.total.toFixed(2) || '0.00'}
+                                pricing={pricing}
+                                className="cart-checkout-btn"
+                            />
+                        </div>
+                    </div>
                 </>
             )}
         </div>
