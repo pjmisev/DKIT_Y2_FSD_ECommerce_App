@@ -521,6 +521,7 @@ button:focus-visible {
 
 .section-card {
     margin-bottom: 30px;
+    width: 100%;
     padding: 20px;
     border: 1px solid #333;
     background-color: #1a1a1a;
