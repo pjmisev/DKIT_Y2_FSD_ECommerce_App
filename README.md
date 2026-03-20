@@ -45,3 +45,4 @@ For any questions or inquiries, please contact any one of us:
 
 - Email: raiviskrums11@gmail.com
 - GitHub: [@RaivisK2510](https://github.com/RaivisK2510)
+- LinkedIn: [Raivis Krumins](https://www.linkedin.com/in/raivis-krumins/)
