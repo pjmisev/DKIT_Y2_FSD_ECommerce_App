@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a client-side application for an e-commerce website. It allows users to browse and purchase products, as well as manage orders and products through an admin panel.
+This is a client-side application for an e-commerce website, developed as part of the Full-Stack Development module in 2nd Year of BSc (Hons) Computing in Software Development at Dundalk Institute of Technology. It allows users to browse and purchase products, as well as manage orders and products through an admin panel.
 
 ## Installation
 
@@ -23,7 +23,7 @@ This is a client-side application for an e-commerce website. It allows users to 
 
 ## License
 
-This project is licensed under Dundalk Institute of Technology's Intellectual Property Policy - see the [LICENSE](LICENSE) file for details.
+This project is licensed under Dundalk Institute of Technology's Intellectual Property Policy - see the [LICENSE](LICENSE.pdf) file for details.
 
 ## Contact
 
