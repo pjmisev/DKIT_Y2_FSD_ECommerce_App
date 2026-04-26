@@ -78,7 +78,8 @@ export const AdminProducts = ({
         }
     };
 
-    const updateProduct = async () => {
+    const updateProduct = async (e) => {
+        e.preventDefault();
         if (!selectedId) return;
 
         const dataToSend = new FormData();
